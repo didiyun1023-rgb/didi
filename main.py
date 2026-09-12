@@ -21,9 +21,11 @@ html_code = """
 
   <style>
     :root {
-      --bg-color: #e0f2fe;
+      /* 더욱 화사하고 청량한 파스텔 블루 테마로 수정 */
+      --bg-color: #f0f9ff;
       --card-bg: #ffffff;
       --primary-color: #0284c7;
+      --primary-gradient: linear-gradient(135deg, #38bdf8, #0284c7);
       --text-color: #0f172a;
       --font-family: 'GangwonEduModu', sans-serif;
       --font-scale: 1;
@@ -32,74 +34,88 @@ html_code = """
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
     html { font-size: calc(16px * var(--font-scale)); }
     body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; min-height: 100vh; transition: all 0.3s ease; }
-    .app-container { width: 100%; max-width: 430px; background: var(--card-bg); min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.08); }
+    .app-container { width: 100%; max-width: 430px; background: var(--card-bg); min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12); }
     
-    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,0.08); background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 1.4rem; font-weight: 800; color: var(--primary-color); cursor: pointer; user-select: none; }
+    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,0.06); background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
+    
+    /* ZeroSub 브랜드 커스텀 브랜드 디자인 */
+    .brand-logo { display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; }
+    .logo-icon { width: 28px; height: 28px; background: var(--primary-gradient); border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(56, 189, 248, 0.4); }
+    .logo-text { font-size: 1.35rem; font-weight: 800; background: var(--primary-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -0.5px; }
+
     .header-right { display: flex; align-items: center; gap: 12px; }
     .icon-btn { background: none; border: none; font-size: 1.25rem; cursor: pointer; position: relative; }
     .notif-badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
-    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.85rem; cursor: pointer; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25); }
 
     .screen { display: none; padding: 16px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
     .screen.active { display: block; }
 
-    .summary-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
-    .summary-title { font-size: 0.8rem; opacity: 0.7; margin-bottom: 4px; }
-    .summary-price { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
-    .alert-tag { background: #fef2f2; color: #ef4444; font-size: 0.75rem; font-weight: 700; padding: 6px 10px; border-radius: 6px; display: inline-block; }
+    .summary-card { background: linear-gradient(135deg, #e0f2fe, #bae6fd); border: 1px solid #7dd3fc; border-radius: 18px; padding: 18px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15); }
+    .summary-title { font-size: 0.8rem; opacity: 0.85; margin-bottom: 4px; font-weight: 700; color: #0369a1; }
+    .summary-price { font-size: 1.65rem; font-weight: 800; margin-bottom: 8px; color: #0c4a6e; }
+    .alert-tag { background: #ffffff; color: #e11d48; font-size: 0.75rem; font-weight: 700; padding: 6px 10px; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-    .chart-card { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: center; }
+    .chart-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
     .chart-container { position: relative; width: 100%; max-width: 200px; margin: 0 auto; }
 
-    .custom-panel { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
+    .custom-panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
     .custom-row { display: flex; justify-content: space-between; align-items: center; }
     .custom-select { padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.8rem; background: var(--card-bg); color: var(--text-color); }
 
     .card-list { display: flex; flex-direction: column; gap: 12px; }
-    .sub-card { background: var(--card-bg); border-radius: 14px; padding: 16px; border: 2px solid rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.1s ease; }
+    .sub-card { background: var(--card-bg); border-radius: 14px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: transform 0.1s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
     .sub-card:active { transform: scale(0.98); }
-    .sub-card.good { border-color: var(--primary-color); }
-    .sub-card.bad { border-color: #ef4444; }
-    .sub-card.warning { border-color: #f59e0b; }
+    .sub-card.good { border-color: #38bdf8; }
+    .sub-card.bad { border-color: #f87171; }
+    .sub-card.warning { border-color: #fbbf24; }
 
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .card-info { display: flex; gap: 10px; align-items: center; }
     .app-icon-img { width: 38px; height: 38px; border-radius: 10px; object-fit: cover; background: #f1f5f9; border: 1px solid rgba(0,0,0,0.05); }
     .badge { font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 12px; }
-    .badge.blue { background: #eff6ff; color: #2563eb; }
-    .badge.red { background: #fef2f2; color: #dc2626; }
-    .badge.orange { background: #fffbebfb; color: #d97706; }
+    .badge.blue { background: #e0f2fe; color: #0284c7; }
+    .badge.red { background: #ffe4e6; color: #e11d48; }
+    .badge.orange { background: #fef3c7; color: #d97706; }
 
     .card-mid { margin-bottom: 10px; font-size: 0.8rem; }
     .usage-text { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px; }
-    .bar-bg { width: 100%; height: 8px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden; }
-    .bar-fill { height: 100%; background: var(--primary-color); border-radius: 4px; }
+    .bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--primary-gradient); border-radius: 4px; }
     .bar-fill.red { background: #ef4444; }
     .bar-fill.orange { background: #f59e0b; }
 
-    .card-bottom { border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; opacity: 0.8; }
-    .link-btn { font-weight: 700; text-decoration: none; color: var(--primary-color); padding: 4px 8px; background: rgba(0,0,0,0.03); border-radius: 6px; }
+    .card-bottom { border-top: 1px solid #f1f5f9; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; opacity: 0.8; }
+    .link-btn { font-weight: 700; text-decoration: none; color: #0284c7; padding: 4px 8px; background: #f0f9ff; border-radius: 6px; }
 
-    .notif-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-start; }
+    .notif-item { padding: 12px; border-bottom: 1px solid #f1f5f9; display: flex; gap: 12px; align-items: flex-start; }
     .notif-icon { font-size: 1.1rem; }
     .notif-title { font-weight: 700; font-size: 0.85rem; }
     .notif-desc { font-size: 0.75rem; opacity: 0.8; margin-top: 2px; }
 
     .member-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-    .mem-btn { padding: 8px 14px; background: rgba(0,0,0,0.05); border: none; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; opacity: 0.7; color: var(--text-color); }
-    .mem-btn.active { background: var(--primary-color); color: white; opacity: 1; }
+    .mem-btn { padding: 8px 14px; background: #f1f5f9; border: none; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap; opacity: 0.7; color: var(--text-color); }
+    .mem-btn.active { background: var(--primary-gradient); color: white; opacity: 1; box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25); }
 
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: var(--card-bg); border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: var(--card-bg); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
     .nav-item { border: none; background: none; color: #64748b; font-size: 0.7rem; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
-    .nav-item.active { color: var(--primary-color); font-weight: 700; }
+    .nav-item.active { color: #0284c7; font-weight: 700; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
   <header class="header">
-    <div class="logo" onclick="switchScreen('dashboard')">ZeroSub</div>
+    <!-- ZeroSub 전용 벡터 아이콘 로고 -->
+    <div class="brand-logo" onclick="switchScreen('dashboard')">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="m9 12 2 2 4-4"/>
+        </svg>
+      </div>
+      <span class="logo-text">ZeroSub</span>
+    </div>
     <div class="header-right">
       <button class="icon-btn" onclick="switchScreen('notif')">
         🔔<span class="notif-badge"></span>
@@ -117,7 +133,7 @@ html_code = """
 
     <!-- 카테고리 시각화 그래프 -->
     <div class="chart-card">
-      <div style="font-size:0.8rem; font-weight:700; margin-bottom:10px; opacity:0.8;">📊 카테고리별 지출 리포트</div>
+      <div style="font-size:0.8rem; font-weight:700; margin-bottom:10px; opacity:0.8; color:#0369a1;">📊 카테고리별 지출 리포트</div>
       <div class="chart-container">
         <canvas id="subChart"></canvas>
       </div>
@@ -149,22 +165,22 @@ html_code = """
   <!-- 상세 페이지: 비교 그래프 포함 -->
   <div id="screen-detail" class="screen">
     <button onclick="switchScreen('dashboard')" style="border:none; background:none; opacity:0.7; font-weight:700; cursor:pointer; margin-bottom:12px;">← 뒤로가기</button>
-    <div style="background:#0f172a; color:white; padding:20px; border-radius:12px; text-align:center; margin-bottom:16px;">
+    <div style="background:linear-gradient(135deg, #0f172a, #1e293b); color:white; padding:20px; border-radius:14px; text-align:center; margin-bottom:16px; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
       <h2 id="det-title">서비스 이름</h2>
       <p id="det-price" style="color:#94a3b8; margin-top:4px;">월 0원</p>
     </div>
     
     <h4 style="margin-bottom:8px;">이용 현황 비교 그래프</h4>
-    <div style="background:var(--card-bg); border:1px solid rgba(0,0,0,0.08); padding:16px; border-radius:12px; margin-bottom:16px;">
+    <div style="background:var(--card-bg); border:1px solid #e2e8f0; padding:16px; border-radius:12px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.02);">
       <!-- 이용 현황 비교 차트 -->
       <div style="height: 140px; position: relative; margin-bottom: 12px;">
         <canvas id="detailCompareChart"></canvas>
       </div>
-      <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;">
+      <div style="border-top: 1px solid #f1f5f9; padding-top: 10px;">
         <p style="font-size:0.85rem;"><strong>AI 진단 결과:</strong> <span id="det-status" style="color:#ef4444; font-weight:700;">-</span></p>
       </div>
     </div>
-    <a id="det-link" href="#" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:10px; font-weight:700; text-decoration:none;">해지/계정 설정 페이지로 이동 ↗</a>
+    <a id="det-link" href="#" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:10px; font-weight:700; text-decoration:none; box-shadow:0 2px 8px rgba(239,68,68,0.3);">해지/계정 설정 페이지로 이동 ↗</a>
   </div>
 
   <div id="screen-family" class="screen">
@@ -205,14 +221,14 @@ html_code = """
           <input type="date" id="add-date" required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; background:var(--card-bg); color:var(--text-color);">
         </div>
       </div>
-      <button type="submit" style="padding:14px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer; font-size:0.9rem;">구독 등록하기</button>
+      <button type="submit" style="padding:14px; background:var(--primary-gradient); color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer; font-size:0.9rem; box-shadow:0 4px 12px rgba(2,132,199,0.3);">구독 등록하기</button>
     </form>
   </div>
 
   <div id="screen-settings" class="screen">
     <h3 style="margin-bottom:16px;">내 계정 및 설정</h3>
     
-    <div style="background:var(--card-bg); border:1px solid rgba(0,0,0,0.08); border-radius:12px; padding:16px; margin-bottom:16px;">
+    <div style="background:var(--card-bg); border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px; box-shadow:0 2px 6px rgba(0,0,0,0.02);">
       <p style="font-weight:700;">홍길동 (gildong@example.com)</p>
       <p style="font-size:0.75rem; opacity:0.7; margin-top:4px;">ZeroSub 프리미엄 가계부 이용 중</p>
     </div>
@@ -222,10 +238,10 @@ html_code = """
       <div class="custom-row">
         <span>🎨 배경 테마 색상:</span>
         <select class="custom-select" onchange="changeTheme(this.value)">
-          <option value="pastel-blue">파스텔블루 (기본)</option>
-          <option value="lime-green">라임그린</option>
-          <option value="mystic-pink">미스틱핑크</option>
-          <option value="dark">다크 모드</option>
+          <option value="bright-blue">청량 파스텔 블루 (기본)</option>
+          <option value="lime-green">화사한 라임그린</option>
+          <option value="mystic-pink">러블리 미스틱핑크</option>
+          <option value="dark">시크 다크 모드</option>
         </select>
       </div>
       <div class="custom-row">
@@ -250,15 +266,15 @@ html_code = """
 
     <h4 style="margin-bottom:8px; margin-top:16px;">자주 묻는 질문 (FAQ)</h4>
     <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;">
-      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
+      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
         <summary style="font-weight:700; cursor:pointer;">왜 바로 원클릭 해지가 안 되나요?</summary>
         <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">각 서비스사의 보안 및 약관 정책상 타 앱에서 해지 결정을 직접 대행할 수 없습니다. 대신 클릭 시 즉시 해당 서비스의 해지/계정 페이지로 연결해 드립니다.</p>
       </details>
-      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
+      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
         <summary style="font-weight:700; cursor:pointer;">가족 중복 구독은 어떻게 감지하나요?</summary>
         <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">가족 관리 탭에 등록된 서비스 데이터를 기반으로 동일한 서비스(예: 유튜브 프리미엄, OTT 등)를 2명 이상 결제 중일 때 자동으로 감지하여 알림을 보냅니다.</p>
       </details>
-      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
+      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
         <summary style="font-weight:700; cursor:pointer;">결제일 알림은 언제 오나요?</summary>
         <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">자동 결제일 3일 전과 1일 전에 푸시 알림 및 알림 센터를 통해 사용량 분석과 함께 안내해 드립니다.</p>
       </details>
@@ -339,7 +355,7 @@ html_code = """
         labels: Object.keys(categories),
         datasets: [{
           data: Object.values(categories),
-          backgroundColor: ['#0284c7', '#10b981', '#f59e0b', '#64748b'],
+          backgroundColor: ['#38bdf8', '#34d399', '#fbbf24', '#94a3b8'],
           borderWidth: 0
         }]
       },
@@ -404,7 +420,7 @@ html_code = """
     document.getElementById('det-status').innerText = sub.status;
     document.getElementById('det-link').href = sub.url;
 
-    // 상세 비교 가로 막대 그래프 그리기
+    // 상세 비교 가로 막대 그래프
     const ctx = document.getElementById('detailCompareChart').getContext('2d');
     if (detailChartInstance) detailChartInstance.destroy();
 
@@ -415,8 +431,8 @@ html_code = """
         datasets: [{
           data: [sub.useVal, sub.avgVal],
           backgroundColor: [
-            sub.badgeClass === 'red' ? '#ef4444' : (sub.badgeClass === 'orange' ? '#f59e0b' : '#0284c7'),
-            '#94a3b8'
+            sub.badgeClass === 'red' ? '#ef4444' : (sub.badgeClass === 'orange' ? '#f59e0b' : '#38bdf8'),
+            '#cbd5e1'
           ],
           borderRadius: 6,
           barThickness: 20
@@ -547,25 +563,29 @@ html_code = """
 
   function changeTheme(theme) {
     const root = document.documentElement;
-    if(theme === 'pastel-blue') {
-      root.style.setProperty('--bg-color', '#e0f2fe');
+    if(theme === 'bright-blue') {
+      root.style.setProperty('--bg-color', '#f0f9ff');
       root.style.setProperty('--card-bg', '#ffffff');
       root.style.setProperty('--primary-color', '#0284c7');
+      root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #38bdf8, #0284c7)');
       root.style.setProperty('--text-color', '#0f172a');
     } else if(theme === 'lime-green') {
-      root.style.setProperty('--bg-color', '#ecfdf5');
+      root.style.setProperty('--bg-color', '#f0fdf4');
       root.style.setProperty('--card-bg', '#ffffff');
       root.style.setProperty('--primary-color', '#10b981');
+      root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #34d399, #10b981)');
       root.style.setProperty('--text-color', '#064e3b');
     } else if(theme === 'mystic-pink') {
       root.style.setProperty('--bg-color', '#fdf2f8');
       root.style.setProperty('--card-bg', '#ffffff');
       root.style.setProperty('--primary-color', '#ec4899');
+      root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #f472b6, #ec4899)');
       root.style.setProperty('--text-color', '#831843');
     } else if(theme === 'dark') {
       root.style.setProperty('--bg-color', '#0f172a');
       root.style.setProperty('--card-bg', '#1e293b');
       root.style.setProperty('--primary-color', '#38bdf8');
+      root.style.setProperty('--primary-gradient', 'linear-gradient(135deg, #38bdf8, #0284c7)');
       root.style.setProperty('--text-color', '#f8fafc');
     }
   }
