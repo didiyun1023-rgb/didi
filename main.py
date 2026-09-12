@@ -1,88 +1,147 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-# 페이지 기본 설정
-st.set_page_config(page_title="SubCut", layout="centered")
+st.set_page_config(page_title="ZeroSub", layout="centered")
 
-# HTML/CSS/JS 단일 템플릿
 html_code = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SubCut - 구독 해지 및 가성비 관리</title>
+  <title>ZeroSub - 스마트 구독 관리</title>
+  <!-- 구글 무료 귀여운 폰트 5종 불러오기 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cute+Font&family=Gaegu&family=GangwonEduPower&family=Jua&family=Sunflower:wght@500;700&display=swap" rel="stylesheet">
+  
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    body { background-color: #f1f5f9; color: #0f172a; display: flex; justify-content: center; min-height: 100vh; }
-    .app-container { width: 100%; max-width: 430px; background: #ffffff; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
-    
-    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid #e2e8f0; background: #ffffff; position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 20px; font-weight: 800; color: #1e293b; }
-    .header-right { display: flex; align-items: center; gap: 8px; }
-    .badge-btn { background: #f1f5f9; color: #475569; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
-    .avatar { width: 30px; height: 30px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
+    :root {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --primary-color: #3b82f6;
+      --text-color: #0f172a;
+      --font-family: 'Jua', sans-serif;
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
+    body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; min-height: 100vh; transition: all 0.3s ease; }
+    .app-container { width: 100%; max-width: 430px; background: var(--card-bg); min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.08); }
+    
+    /* 상단 헤더 */
+    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid #e2e8f0; background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 22px; font-weight: 800; color: var(--primary-color); cursor: pointer; user-select: none; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; position: relative; }
+    .notif-badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; cursor: pointer; }
+
+    /* 화면 스크린 */
     .screen { display: none; padding: 16px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
     .screen.active { display: block; }
 
-    .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
-    .summary-title { font-size: 12px; color: #64748b; margin-bottom: 4px; }
-    .summary-price { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
-    .alert-tag { background: #fef2f2; color: #ef4444; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+    /* 요약 카드 */
+    .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+    .summary-title { font-size: 13px; color: #64748b; margin-bottom: 4px; }
+    .summary-price { font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+    .alert-tag { background: #fef2f2; color: #ef4444; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 6px; display: inline-block; }
 
+    /* 커스텀 테마/폰트 컨트롤 바 */
+    .custom-panel { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+    .custom-row { display: flex; justify-content: space-between; align-items: center; }
+    .custom-select { padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; }
+
+    /* 구독 서비스 카드 리스트 */
     .card-list { display: flex; flex-direction: column; gap: 12px; }
-    .sub-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; }
+    .sub-card { background: #ffffff; border-radius: 14px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: transform 0.1s ease; }
+    .sub-card:active { transform: scale(0.98); }
     .sub-card.good { border-color: #3b82f6; }
     .sub-card.bad { border-color: #ef4444; }
-    
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
-    .card-info { display: flex; gap: 12px; align-items: center; }
-    .icon-box { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+    .sub-card.warning { border-color: #f59e0b; }
+
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .card-info { display: flex; gap: 10px; align-items: center; }
+    .icon-box { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 15px; }
     .badge { font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 12px; }
     .badge.blue { background: #eff6ff; color: #2563eb; }
     .badge.red { background: #fef2f2; color: #dc2626; }
+    .badge.orange { background: #fffbebfb; color: #d97706; }
 
-    .card-mid { margin-bottom: 12px; font-size: 13px; }
-    .bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; margin-top: 6px; overflow: hidden; }
-    .bar-fill { height: 100%; background: #3b82f6; border-radius: 4px; }
+    .card-mid { margin-bottom: 10px; font-size: 13px; }
+    .usage-text { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px; }
+    .bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; background: var(--primary-color); border-radius: 4px; }
     .bar-fill.red { background: #ef4444; }
+    .bar-fill.orange { background: #f59e0b; }
 
-    .card-bottom { border-top: 1px solid #f1f5f9; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b; }
-    .link-btn { font-weight: 700; text-decoration: none; cursor: pointer; }
-    .link-btn.blue { color: #2563eb; }
-    .link-btn.red { color: #dc2626; }
+    .card-bottom { border-top: 1px solid #f1f5f9; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b; }
+    .link-btn { font-weight: 700; text-decoration: none; color: #2563eb; padding: 4px 8px; background: #f8fafc; border-radius: 6px; }
 
-    .graph-box { background: white; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; margin: 16px 0; display: flex; justify-content: space-around; align-items: flex-end; height: 160px; }
-    .bar-group { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; color: #64748b; }
-    .bar-pillar { width: 32px; border-radius: 4px 4px 0 0; }
-    .feedback-box { background: #fef2f2; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.4; margin-bottom: 16px; }
+    /* 알림 센터 화면 */
+    .notif-item { padding: 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 12px; align-items: flex-start; }
+    .notif-icon { font-size: 18px; }
+    .notif-title { font-weight: 700; font-size: 13px; }
+    .notif-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
 
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-    .nav-item { border: none; background: none; color: #64748b; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
-    .nav-item.active { color: #3b82f6; font-weight: 700; }
+    /* 가족 탭 */
+    .member-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+    .mem-btn { padding: 8px 14px; background: #f1f5f9; border: none; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; color: #64748b; }
+    .mem-btn.active { background: var(--primary-color); color: white; }
+
+    /* 하단 바 */
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: var(--card-bg); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+    .nav-item { border: none; background: none; color: #64748b; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
+    .nav-item.active { color: var(--primary-color); font-weight: 700; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
+  <!-- 상단 헤더 -->
   <header class="header">
-    <div class="logo">SubCut</div>
+    <div class="logo" onclick="switchScreen('dashboard')">ZeroSub</div>
     <div class="header-right">
-      <button class="badge-btn" onclick="switchScreen('family')">가족 계정 (4명)</button>
-      <div class="avatar">나</div>
+      <button class="icon-btn" onclick="switchScreen('notif')">
+        🔔<span class="notif-badge"></span>
+      </button>
+      <div class="avatar" onclick="switchScreen('settings')">나</div>
     </div>
   </header>
 
+  <!-- 1. 대시보드 메인 화면 -->
   <div id="screen-dashboard" class="screen active">
+    <!-- 커스텀 스타일 컨트롤러 -->
+    <div class="custom-panel">
+      <div class="custom-row">
+        <span>🎨 배경 테마:</span>
+        <select class="custom-select" onchange="changeTheme(this.value)">
+          <option value="light">기본 파스텔 블루</option>
+          <option value="mint">상큼 민트</option>
+          <option value="warm">포근 워치/피치</option>
+          <option value="dark">다크 모드</option>
+        </select>
+      </div>
+      <div class="custom-row">
+        <span>✏️ 귀여운 폰트 설정:</span>
+        <select class="custom-select" onchange="changeFont(this.value)">
+          <option value="'Jua', sans-serif">주아체 (추천)</option>
+          <option value="'GangwonEduPower', sans-serif">강원교육모두체</option>
+          <option value="'Gaegu', cursive">개구쟁이체</option>
+          <option value="'Sunflower', sans-serif">해바라기체</option>
+          <option value="'Cute Font', cursive">큐트폰트</option>
+        </select>
+      </div>
+    </div>
+
     <div class="summary-card">
-      <div class="summary-title">이번 달 결제 예정 총액</div>
-      <div class="summary-price">48,500원</div>
-      <div class="alert-tag">⚠️ OTT 카테고리 2건 중복 구독 중</div>
+      <div class="summary-title">내가 결제하는 월 구독 금액</div>
+      <div class="summary-price">79,300원 <span style="font-size:14px; color:#64748b; font-weight:400;">(총 6개)</span></div>
+      <div class="alert-tag">⚠️ 유튜브, 스포티파이 가족 중복 계정 감지!</div>
     </div>
 
     <div class="card-list">
-      <div class="sub-card good" onclick="switchScreen('detail')">
+      <!-- 넷플릭스 -->
+      <div class="sub-card good" onclick="openDetail('넷플릭스', '17,000원', '영상 스트리밍', '32시간 40분', '15시간 00분', '80%', '정상 이용 중', 'https://www.netflix.com/youraccount')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#e50914;">N</div>
@@ -91,22 +150,48 @@ html_code = """
               <div style="font-size:12px; color:#64748b;">월 17,000원</div>
             </div>
           </div>
-          <span class="badge blue">알뜰 이용 중 (상위 15%)</span>
+          <span class="badge blue">알뜰 활용</span>
         </div>
         <div class="card-mid">
-          <div style="display:flex; justify-content:space-between; color:#64748b; font-size:11px;">
-            <span>내 사용: 45시간</span>
-            <span>평균: 30시간</span>
+          <div class="usage-text">
+            <span>이번 달 시청시간</span>
+            <span style="color:#2563eb;">32시간 40분</span>
           </div>
-          <div class="bar-bg"><div class="bar-fill" style="width: 85%;"></div></div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 80%;"></div></div>
         </div>
         <div class="card-bottom">
           <span>다음 결제일: 10월 15일</span>
-          <a class="link-btn blue" href="https://www.netflix.com/youraccount" target="_blank">해지 이동 URL →</a>
+          <span class="link-btn">상세 분석 →</span>
         </div>
       </div>
 
-      <div class="sub-card bad" onclick="switchScreen('detail')">
+      <!-- 유튜브 프리미엄 -->
+      <div class="sub-card warning" onclick="openDetail('유튜브 프리미엄', '14,900원', '영상/음악', '48시간 10분', '20시간 00분', '90%', '아빠 계정과 중복 이용 중', 'https://www.youtube.com/paid_memberships')">
+        <div class="card-top">
+          <div class="card-info">
+            <div class="icon-box" style="background:#ff0000;">Y</div>
+            <div>
+              <div style="font-weight:700;">유튜브 프리미엄</div>
+              <div style="font-size:12px; color:#64748b;">월 14,900원</div>
+            </div>
+          </div>
+          <span class="badge orange">가족 중복 주의</span>
+        </div>
+        <div class="card-mid">
+          <div class="usage-text">
+            <span>시청시간</span>
+            <span style="color:#d97706;">48시간 10분 (아빠도 구독 중!)</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill orange" style="width: 90%;"></div></div>
+        </div>
+        <div class="card-bottom">
+          <span>다음 결제일: 10월 02일</span>
+          <span class="link-btn">상세 분석 →</span>
+        </div>
+      </div>
+
+      <!-- 티빙 -->
+      <div class="sub-card bad" onclick="openDetail('티빙', '13,900원', '영상 스트리밍', '0시간 20분', '12시간 00분', '5%', '해지 강력 권장 (D-3)', 'https://www.tving.com/my/subscription')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#ff153c;">T</div>
@@ -115,87 +200,313 @@ html_code = """
               <div style="font-size:12px; color:#64748b;">월 13,900원</div>
             </div>
           </div>
-          <span class="badge red">낭비 주의 (하위 80%)</span>
+          <span class="badge red">낭비 경고 (D-3)</span>
         </div>
         <div class="card-mid">
-          <div style="color:#dc2626; font-weight:700; font-size:12px;">⚠️ 이번 달 시청 시간 0시간 (D-3)</div>
+          <div class="usage-text">
+            <span>이번 달 시청시간</span>
+            <span style="color:#dc2626;">0시간 20분</span>
+          </div>
           <div class="bar-bg"><div class="bar-fill red" style="width: 5%;"></div></div>
         </div>
         <div class="card-bottom">
-          <span style="color:#dc2626; font-weight:600;">3일 후 자동 결제</span>
-          <a class="link-btn red" href="https://www.tving.com" target="_blank">원클릭 해지하기 🔗</a>
+          <span style="color:#dc2626; font-weight:700;">3일 후 13,900원 자동결제</span>
+          <span class="link-btn" style="color:#dc2626;">해지 가기 →</span>
+        </div>
+      </div>
+
+      <!-- 멜론 -->
+      <div class="sub-card bad" onclick="openDetail('멜론', '10,900원', '음악 스트리밍', '재생 12회', '평균 250회', '8%', '스포티파이와 기능 중복', 'https://www.melon.com/buy/pamphlet/continue.htm')">
+        <div class="card-top">
+          <div class="card-info">
+            <div class="icon-box" style="background:#00cd3c;">M</div>
+            <div>
+              <div style="font-weight:700;">멜론</div>
+              <div style="font-size:12px; color:#64748b;">월 10,900원</div>
+            </div>
+          </div>
+          <span class="badge red">음악앱 중복</span>
+        </div>
+        <div class="card-mid">
+          <div class="usage-text">
+            <span>월간 총 재생 횟수</span>
+            <span style="color:#dc2626;">12회 (방치 중)</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill red" style="width: 8%;"></div></div>
+        </div>
+        <div class="card-bottom">
+          <span>다음 결제일: 09월 28일</span>
+          <span class="link-btn">상세 분석 →</span>
+        </div>
+      </div>
+
+      <!-- 스포티파이 -->
+      <div class="sub-card good" onclick="openDetail('스포티파이', '11,900원', '음악 스트리밍', '재생 450회', '평균 200회', '85%', '정상 이용 중', 'https://www.spotify.com/kr-ko/account/overview/')">
+        <div class="card-top">
+          <div class="card-info">
+            <div class="icon-box" style="background:#1ed760;">S</div>
+            <div>
+              <div style="font-weight:700;">스포티파이</div>
+              <div style="font-size:12px; color:#64748b;">월 11,900원</div>
+            </div>
+          </div>
+          <span class="badge blue">주력 음악앱</span>
+        </div>
+        <div class="card-mid">
+          <div class="usage-text">
+            <span>월간 총 재생 횟수</span>
+            <span style="color:#2563eb;">450회</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill" style="width: 85%;"></div></div>
+        </div>
+        <div class="card-bottom">
+          <span>다음 결제일: 10월 05일</span>
+          <span class="link-btn">상세 분석 →</span>
+        </div>
+      </div>
+
+      <!-- 배달의민족 (배민클럽) -->
+      <div class="sub-card warning" onclick="openDetail('배달의민족 (배민클럽)', '3,900원', '배달 혜택', '3회 이용 (혜택 2,100원)', '월 5회 이상 권장', '40%', '본전 미달 이용 중', 'https://www.baemin.com')">
+        <div class="card-top">
+          <div class="card-info">
+            <div class="icon-box" style="background:#2ac1bc;">배</div>
+            <div>
+              <div style="font-weight:700;">배민클럽</div>
+              <div style="font-size:12px; color:#64748b;">월 3,900원</div>
+            </div>
+          </div>
+          <span class="badge orange">본전 미달</span>
+        </div>
+        <div class="card-mid">
+          <div class="usage-text">
+            <span>이번 달 주문 할인</span>
+            <span style="color:#d97706;">3회 (구독료 미달)</span>
+          </div>
+          <div class="bar-bg"><div class="bar-fill orange" style="width: 40%;"></div></div>
+        </div>
+        <div class="card-bottom">
+          <span>다음 결제일: 10월 11일</span>
+          <span class="link-btn">상세 분석 →</span>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- 2. 알림 센터 화면 -->
+  <div id="screen-notif" class="screen">
+    <h3 style="margin-bottom:16px;">알림 센터</h3>
+    <div class="notif-item">
+      <div class="notif-icon">🚨</div>
+      <div>
+        <div class="notif-title">티빙 결제 3일 전 알림</div>
+        <div class="notif-desc">이번 달 시청 시간이 0시간 20분입니다. 결제 전 해지하시겠어요?</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon">👨‍👩‍👧</div>
+      <div>
+        <div class="notif-title">가족 중복 구독 발견!</div>
+        <div class="notif-desc">아빠 계정과 '유튜브 프리미엄'을 각각 결제 중입니다. 패밀리 요금제로 통합 시 월 9,000원 절약 가능!</div>
+      </div>
+    </div>
+    <div class="notif-item">
+      <div class="notif-icon">💡</div>
+      <div>
+        <div class="notif-title">멜론 구독 재조정 추천</div>
+        <div class="notif-desc">스포티파이를 주로 이용 중이시네요. 멜론 구독을 정지하는 것을 권장합니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 상세 분석 & 해지 이동 화면 -->
+  <div id="screen-detail" class="screen">
+    <button onclick="switchScreen('dashboard')" style="border:none; background:none; color:#64748b; font-weight:700; cursor:pointer; margin-bottom:12px;">← 뒤로가기</button>
+    <div style="background:#0f172a; color:white; padding:20px; border-radius:12px; text-align:center; margin-bottom:16px;">
+      <h2 id="det-title">서비스 이름</h2>
+      <p id="det-price" style="color:#94a3b8; margin-top:4px;">월 0원</p>
+    </div>
+    <h4 style="margin-bottom:8px;">이용 현황 상세 분석</h4>
+    <div style="background:white; border:1px solid #e2e8f0; padding:16px; border-radius:12px; margin-bottom:16px;">
+      <p style="margin-bottom:8px;"><strong>내 사용량:</strong> <span id="det-use">0</span></p>
+      <p style="margin-bottom:8px;"><strong>권장/평균 기준:</strong> <span id="det-avg">0</span></p>
+      <p style="margin-bottom:8px;"><strong>진단 상태:</strong> <span id="det-status" style="color:#ef4444; font-weight:700;">-</span></p>
+    </div>
+    <a id="det-link" href="#" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:10px; font-weight:700; text-decoration:none;">해지/계정 설정 페이지로 이동 ↗</a>
+  </div>
+
+  <!-- 4. 가족 관리 화면 (4명) -->
+  <div id="screen-family" class="screen">
+    <h3>우리 가족 구독 지출</h3>
+    <p style="font-size:13px; color:#64748b; margin-top:4px; margin-bottom:16px;">가족 전체 총 148,200원 지출 중</p>
+
+    <!-- 멤버 탭 -->
+    <div class="member-tabs">
+      <button class="mem-btn active" onclick="switchFamily('me', this)">나 (6개)</button>
+      <button class="mem-btn" onclick="switchFamily('mom', this)">엄마 (3개)</button>
+      <button class="mem-btn" onclick="switchFamily('dad', this)">아빠 (4개)</button>
+      <button class="mem-btn" onclick="switchFamily('sibling', this)">동생 (2개)</button>
+    </div>
+
+    <!-- 멤버별 구독 내용 목록 -->
+    <div id="fam-list" class="card-list">
+      <!-- JS로 dynamic 처리 -->
+    </div>
+  </div>
+
+  <!-- 5. 구독 추가 화면 -->
   <div id="screen-add" class="screen">
     <h3 style="margin-bottom: 16px;">새 구독 서비스 추가</h3>
     <div style="display:flex; flex-direction:column; gap:12px;">
-      <input type="text" placeholder="앱/서비스 검색 (예: 멜론)" style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
+      <input type="text" placeholder="서비스 이름 (예: 왓챠)" style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
       <input type="number" placeholder="월 결제 금액 (원)" style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
-      <div>
-        <label style="font-size:12px; color:#64748b;">주간 평균 사용 시간</label>
-        <input type="range" min="0" max="20" value="2" style="width:100%; margin-top:8px;">
-      </div>
-      <button onclick="switchScreen('dashboard')" style="padding:14px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer;">등록 완료하기</button>
+      <select style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
+        <option>영상 스트리밍 (시간 기준)</option>
+        <option>음악 스트리밍 (재생 횟수 기준)</option>
+        <option>기타 쇼핑/배달 혜택</option>
+      </select>
+      <button onclick="switchScreen('dashboard')" style="padding:14px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer;">구독 등록하기</button>
     </div>
   </div>
 
-  <div id="screen-detail" class="screen">
-    <div style="background:#000; color:white; padding:16px; border-radius:8px; text-align:center; margin-bottom:16px;">
-      <h2>티빙 프리미엄 요금제</h2>
+  <!-- 6. 계정 및 설정 / FAQ 화면 -->
+  <div id="screen-settings" class="screen">
+    <h3 style="margin-bottom:16px;">내 계정 및 설정</h3>
+    <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px;">
+      <p style="font-weight:700;">홍길동 (gildong@example.com)</p>
+      <p style="font-size:12px; color:#64748b; margin-top:4px;">ZeroSub 프리미엄 가계부 이용 중</p>
     </div>
-    <h4>가성비 분석 비교</h4>
-    <div class="graph-box">
-      <div class="bar-group">
-        <span>32시간</span>
-        <div class="bar-pillar" style="height:100px; background:#8b5cf6;"></div>
-        <span>사용자 평균</span>
-      </div>
-      <div class="bar-group">
-        <span>4시간</span>
-        <div class="bar-pillar" style="height:20px; background:#ef4444;"></div>
-        <span>나의 사용</span>
-      </div>
-    </div>
-    <div class="feedback-box">
-      💡 사용자 평균보다 28시간 덜 쓰고 있어요! 1시간당 3,475원을 지불하는 꼴입니다. 해지를 권장합니다.
-    </div>
-    <a href="https://www.tving.com" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:8px; font-weight:700; text-decoration:none;">해지 페이지 직링크로 이동 ↗</a>
-  </div>
 
-  <div id="screen-family" class="screen">
-    <h3>우리 가족 구독 지출</h3>
-    <p style="font-size:13px; color:#64748b; margin-top:4px; margin-bottom:16px;">월 102,400원 (총 8개 이용 중)</p>
-
-    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
-      <div>
-        <div style="font-weight:700; font-size:14px;">엄마 계정: 임영웅 팬클럽</div>
-        <div style="font-size:12px; color:#64748b;">다음 결제일: 9월 28일</div>
-      </div>
-      <button style="background:#f97316; color:white; border:none; padding:8px 10px; border-radius:6px; font-size:11px; font-weight:700; cursor:pointer;">자녀 대리 해지 안내받기</button>
+    <h4 style="margin-bottom:8px;">자주 묻는 질문 (FAQ)</h4>
+    <div style="display:flex; flex-direction:column; gap:8px; font-size:13px;">
+      <details style="background:white; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+        <summary style="font-weight:700; cursor:pointer;">왜 바로 원클릭 해지가 안 되나요?</summary>
+        <p style="color:#64748b; margin-top:6px; font-size:12px;">각 서비스사(넷플릭스, 티빙 등)의 보안 정책상 외부 앱에서 로그인 없이 해지 버튼을 직접 누르는 것은 금지되어 있습니다. ZeroSub은 해당 앱의 '해지 설정 URL'로 직접 연결해 드립니다.</p>
+      </details>
+      <details style="background:white; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+        <summary style="font-weight:700; cursor:pointer;">가족 중복 구독은 어떻게 찾나요?</summary>
+        <p style="color:#64748b; margin-top:6px; font-size:12px;">'가족 관리' 탭에서 구성원을 등록하면 동일한 서비스(예: 유튜브)를 결제 중인 계정을 자동으로 대조하여 알림을 보냅니다.</p>
+      </details>
     </div>
   </div>
 
+  <!-- 하단 네비게이션 바 -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchScreen('dashboard')">🏠<br>홈</button>
     <button class="nav-item" onclick="switchScreen('add')">➕<br>구독 추가</button>
     <button class="nav-item" onclick="switchScreen('family')">👨‍👩‍👧<br>가족 관리</button>
+    <button class="nav-item" onclick="switchScreen('settings')">⚙️<br>설정</button>
   </nav>
 </div>
 
 <script>
+  // 화면 전환 함수
   function switchScreen(screenId) {
     document.querySelectorAll('.screen').forEach(function(el) {
       el.classList.remove('active');
     });
+    document.querySelectorAll('.nav-item').forEach(function(el) {
+      el.classList.remove('active');
+    });
     document.getElementById('screen-' + screenId).classList.add('active');
+    
+    if(screenId === 'family') {
+      switchFamily('me', document.querySelectorAll('.mem-btn')[0]);
+    }
+  }
+
+  // 상세 보기 페이지 설정 함수 (오류 수정 반영)
+  function openDetail(title, price, type, use, avg, fill, status, linkUrl) {
+    document.getElementById('det-title').innerText = title;
+    document.getElementById('det-price').innerText = "월 " + price + " (" + type + ")";
+    document.getElementById('det-use').innerText = use;
+    document.getElementById('det-avg').innerText = avg;
+    document.getElementById('det-status').innerText = status;
+    document.getElementById('det-link').href = linkUrl;
+    switchScreen('detail');
+  }
+
+  // 가족 멤버별 구독 정보 데이터
+  const familyData = {
+    me: [
+      { name: '넷플릭스', price: '17,000원', desc: '시청시간: 32시간 40분' },
+      { name: '유튜브 프리미엄', price: '14,900원', desc: '⚠️ 아빠와 중복 구독 중' },
+      { name: '티빙', price: '13,900원', desc: '시청시간: 0시간 20분 (D-3 결제)' },
+      { name: '멜론', price: '10,900원', desc: '재생: 12회 (방치 중)' },
+      { name: '스포티파이', price: '11,900원', desc: '재생: 450회 (주력)' },
+      { name: '배민클럽', price: '3,900원', desc: '주문: 3회' }
+    ],
+    mom: [
+      { name: '임영웅 팬클럽 영웅시대', price: '15,000원', desc: '다음 결제일: 09월 28일' },
+      { name: '쿠팡 와우 멤버십', price: '7,890원', desc: '가족 통합 쇼핑 이용 중' },
+      { name: '웨이브 (Wavve)', price: '10,900원', desc: '시청시간: 18시간 10분' }
+    ],
+    dad: [
+      { name: '유튜브 프리미엄', price: '14,900원', desc: '⚠️ 자녀(나)와 중복 구독 중!' },
+      { name: '네이버플러스 멤버십', price: '4,900원', desc: '적립 혜택 알뜰 이용 중' },
+      { name: '밀리의 서재', price: '9,900원', desc: '월 독서시간: 5시간 20분' },
+      { name: '골프존 GDR 패스', price: '25,000원', desc: '이용 횟수: 월 8회' }
+    ],
+    sibling: [
+      { name: '애플 뮤직', price: '8,900원', desc: '재생: 310회' },
+      { name: '인스타360 클라우드', price: '4,500원', desc: '용량 70% 사용 중' }
+    ]
+  };
+
+  function switchFamily(member, btn) {
+    document.querySelectorAll('.mem-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const container = document.getElementById('fam-list');
+    container.innerHTML = '';
+
+    familyData[member].forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'sub-card';
+      card.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="font-weight:700;">${item.name}</div>
+            <div style="font-size:12px; color:#64748b;">${item.desc}</div>
+          </div>
+          <div style="font-weight:700; color:#0f172a;">${item.price}</div>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  // 테마 및 폰트 변경 기능
+  function changeTheme(theme) {
+    const root = document.documentElement;
+    if(theme === 'light') {
+      root.style.setProperty('--bg-color', '#f1f5f9');
+      root.style.setProperty('--card-bg', '#ffffff');
+      root.style.setProperty('--primary-color', '#3b82f6');
+      root.style.setProperty('--text-color', '#0f172a');
+    } else if(theme === 'mint') {
+      root.style.setProperty('--bg-color', '#e6f4f1');
+      root.style.setProperty('--card-bg', '#ffffff');
+      root.style.setProperty('--primary-color', '#10b981');
+      root.style.setProperty('--text-color', '#064e3b');
+    } else if(theme === 'warm') {
+      root.style.setProperty('--bg-color', '#fdf2f2');
+      root.style.setProperty('--card-bg', '#ffffff');
+      root.style.setProperty('--primary-color', '#f43f5e');
+      root.style.setProperty('--text-color', '#881337');
+    } else if(theme === 'dark') {
+      root.style.setProperty('--bg-color', '#0f172a');
+      root.style.setProperty('--card-bg', '#1e293b');
+      root.style.setProperty('--primary-color', '#38bdf8');
+      root.style.setProperty('--text-color', '#f8fafc');
+    }
+  }
+
+  function changeFont(font) {
+    document.documentElement.style.setProperty('--font-family', font);
   }
 </script>
 </body>
 </html>
 """
 
-# 파이썬 화면에 렌더링
-components.html(html_code, height=800, scrolling=True)
+components.html(html_code, height=850, scrolling=True)
