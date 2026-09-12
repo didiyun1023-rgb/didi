@@ -10,52 +10,48 @@ html_code = """
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZeroSub - 스마트 구독 관리</title>
-  <!-- 구글 무료 귀여운 폰트 5종 불러오기 -->
+
+  <!-- 구글 한국어 폰트 불러오기 (나눔고딕, 감자꽃, 큐트폰트, 스타일리, 강원교육모두) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cute+Font&family=Gaegu&family=GangwonEduPower&family=Jua&family=Sunflower:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cute+Font&family=Gamja+Flower&family=GangwonEduModu:wght@400;700&family=Nanum+Gothic:wght@400;700&family=Sunflower:wght@500;700&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --bg-color: #f1f5f9;
+      --bg-color: #e0f2fe;
       --card-bg: #ffffff;
-      --primary-color: #3b82f6;
+      --primary-color: #0284c7;
       --text-color: #0f172a;
-      --font-family: 'Jua', sans-serif;
+      --font-family: 'GangwonEduModu', sans-serif;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); }
     body { background-color: var(--bg-color); color: var(--text-color); display: flex; justify-content: center; min-height: 100vh; transition: all 0.3s ease; }
     .app-container { width: 100%; max-width: 430px; background: var(--card-bg); min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.08); }
     
-    /* 상단 헤더 */
-    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid #e2e8f0; background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
+    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid rgba(0,0,0,0.08); background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
     .logo { font-size: 22px; font-weight: 800; color: var(--primary-color); cursor: pointer; user-select: none; }
     .header-right { display: flex; align-items: center; gap: 12px; }
     .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; position: relative; }
     .notif-badge { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; }
     .avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; cursor: pointer; }
 
-    /* 화면 스크린 */
     .screen { display: none; padding: 16px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
     .screen.active { display: block; }
 
-    /* 요약 카드 */
-    .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px; margin-bottom: 16px; }
-    .summary-title { font-size: 13px; color: #64748b; margin-bottom: 4px; }
-    .summary-price { font-size: 26px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+    .summary-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+    .summary-title { font-size: 13px; opacity: 0.7; margin-bottom: 4px; }
+    .summary-price { font-size: 26px; font-weight: 700; margin-bottom: 8px; }
     .alert-tag { background: #fef2f2; color: #ef4444; font-size: 12px; font-weight: 700; padding: 6px 10px; border-radius: 6px; display: inline-block; }
 
-    /* 커스텀 테마/폰트 컨트롤 바 */
-    .custom-panel { background: #f1f5f9; border-radius: 12px; padding: 12px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+    .custom-panel { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
     .custom-row { display: flex; justify-content: space-between; align-items: center; }
-    .custom-select { padding: 4px 8px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; }
+    .custom-select { padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; background: var(--card-bg); color: var(--text-color); }
 
-    /* 구독 서비스 카드 리스트 */
     .card-list { display: flex; flex-direction: column; gap: 12px; }
-    .sub-card { background: #ffffff; border-radius: 14px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; transition: transform 0.1s ease; }
+    .sub-card { background: var(--card-bg); border-radius: 14px; padding: 16px; border: 2px solid rgba(0,0,0,0.08); cursor: pointer; transition: transform 0.1s ease; }
     .sub-card:active { transform: scale(0.98); }
-    .sub-card.good { border-color: #3b82f6; }
+    .sub-card.good { border-color: var(--primary-color); }
     .sub-card.bad { border-color: #ef4444; }
     .sub-card.warning { border-color: #f59e0b; }
 
@@ -69,27 +65,24 @@ html_code = """
 
     .card-mid { margin-bottom: 10px; font-size: 13px; }
     .usage-text { display: flex; justify-content: space-between; font-weight: 600; margin-bottom: 4px; }
-    .bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .bar-bg { width: 100%; height: 8px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden; }
     .bar-fill { height: 100%; background: var(--primary-color); border-radius: 4px; }
     .bar-fill.red { background: #ef4444; }
     .bar-fill.orange { background: #f59e0b; }
 
-    .card-bottom { border-top: 1px solid #f1f5f9; padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #64748b; }
-    .link-btn { font-weight: 700; text-decoration: none; color: #2563eb; padding: 4px 8px; background: #f8fafc; border-radius: 6px; }
+    .card-bottom { border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; opacity: 0.8; }
+    .link-btn { font-weight: 700; text-decoration: none; color: var(--primary-color); padding: 4px 8px; background: rgba(0,0,0,0.03); border-radius: 6px; }
 
-    /* 알림 센터 화면 */
-    .notif-item { padding: 12px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 12px; align-items: flex-start; }
+    .notif-item { padding: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); display: flex; gap: 12px; align-items: flex-start; }
     .notif-icon { font-size: 18px; }
     .notif-title { font-weight: 700; font-size: 13px; }
-    .notif-desc { font-size: 12px; color: #64748b; margin-top: 2px; }
+    .notif-desc { font-size: 12px; opacity: 0.8; margin-top: 2px; }
 
-    /* 가족 탭 */
     .member-tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-    .mem-btn { padding: 8px 14px; background: #f1f5f9; border: none; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; color: #64748b; }
-    .mem-btn.active { background: var(--primary-color); color: white; }
+    .mem-btn { padding: 8px 14px; background: rgba(0,0,0,0.05); border: none; border-radius: 20px; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; opacity: 0.7; color: var(--text-color); }
+    .mem-btn.active { background: var(--primary-color); color: white; opacity: 1; }
 
-    /* 하단 바 */
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: var(--card-bg); border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: var(--card-bg); border-top: 1px solid rgba(0,0,0,0.08); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
     .nav-item { border: none; background: none; color: #64748b; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; }
     .nav-item.active { color: var(--primary-color); font-weight: 700; }
   </style>
@@ -97,7 +90,6 @@ html_code = """
 <body>
 
 <div class="app-container">
-  <!-- 상단 헤더 -->
   <header class="header">
     <div class="logo" onclick="switchScreen('dashboard')">ZeroSub</div>
     <div class="header-right">
@@ -108,46 +100,21 @@ html_code = """
     </div>
   </header>
 
-  <!-- 1. 대시보드 메인 화면 -->
   <div id="screen-dashboard" class="screen active">
-    <!-- 커스텀 스타일 컨트롤러 -->
-    <div class="custom-panel">
-      <div class="custom-row">
-        <span>🎨 배경 테마:</span>
-        <select class="custom-select" onchange="changeTheme(this.value)">
-          <option value="light">기본 파스텔 블루</option>
-          <option value="mint">상큼 민트</option>
-          <option value="warm">포근 워치/피치</option>
-          <option value="dark">다크 모드</option>
-        </select>
-      </div>
-      <div class="custom-row">
-        <span>✏️ 귀여운 폰트 설정:</span>
-        <select class="custom-select" onchange="changeFont(this.value)">
-          <option value="'Jua', sans-serif">주아체 (추천)</option>
-          <option value="'GangwonEduPower', sans-serif">강원교육모두체</option>
-          <option value="'Gaegu', cursive">개구쟁이체</option>
-          <option value="'Sunflower', sans-serif">해바라기체</option>
-          <option value="'Cute Font', cursive">큐트폰트</option>
-        </select>
-      </div>
-    </div>
-
     <div class="summary-card">
       <div class="summary-title">내가 결제하는 월 구독 금액</div>
-      <div class="summary-price">79,300원 <span style="font-size:14px; color:#64748b; font-weight:400;">(총 6개)</span></div>
+      <div class="summary-price">79,300원 <span style="font-size:14px; opacity:0.6; font-weight:400;">(총 6개)</span></div>
       <div class="alert-tag">⚠️ 유튜브, 스포티파이 가족 중복 계정 감지!</div>
     </div>
 
     <div class="card-list">
-      <!-- 넷플릭스 -->
       <div class="sub-card good" onclick="openDetail('넷플릭스', '17,000원', '영상 스트리밍', '32시간 40분', '15시간 00분', '80%', '정상 이용 중', 'https://www.netflix.com/youraccount')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#e50914;">N</div>
             <div>
               <div style="font-weight:700;">넷플릭스</div>
-              <div style="font-size:12px; color:#64748b;">월 17,000원</div>
+              <div style="font-size:12px; opacity:0.7;">월 17,000원</div>
             </div>
           </div>
           <span class="badge blue">알뜰 활용</span>
@@ -165,14 +132,13 @@ html_code = """
         </div>
       </div>
 
-      <!-- 유튜브 프리미엄 -->
       <div class="sub-card warning" onclick="openDetail('유튜브 프리미엄', '14,900원', '영상/음악', '48시간 10분', '20시간 00분', '90%', '아빠 계정과 중복 이용 중', 'https://www.youtube.com/paid_memberships')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#ff0000;">Y</div>
             <div>
               <div style="font-weight:700;">유튜브 프리미엄</div>
-              <div style="font-size:12px; color:#64748b;">월 14,900원</div>
+              <div style="font-size:12px; opacity:0.7;">월 14,900원</div>
             </div>
           </div>
           <span class="badge orange">가족 중복 주의</span>
@@ -190,14 +156,13 @@ html_code = """
         </div>
       </div>
 
-      <!-- 티빙 -->
       <div class="sub-card bad" onclick="openDetail('티빙', '13,900원', '영상 스트리밍', '0시간 20분', '12시간 00분', '5%', '해지 강력 권장 (D-3)', 'https://www.tving.com/my/subscription')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#ff153c;">T</div>
             <div>
               <div style="font-weight:700;">티빙</div>
-              <div style="font-size:12px; color:#64748b;">월 13,900원</div>
+              <div style="font-size:12px; opacity:0.7;">월 13,900원</div>
             </div>
           </div>
           <span class="badge red">낭비 경고 (D-3)</span>
@@ -215,14 +180,13 @@ html_code = """
         </div>
       </div>
 
-      <!-- 멜론 -->
       <div class="sub-card bad" onclick="openDetail('멜론', '10,900원', '음악 스트리밍', '재생 12회', '평균 250회', '8%', '스포티파이와 기능 중복', 'https://www.melon.com/buy/pamphlet/continue.htm')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#00cd3c;">M</div>
             <div>
               <div style="font-weight:700;">멜론</div>
-              <div style="font-size:12px; color:#64748b;">월 10,900원</div>
+              <div style="font-size:12px; opacity:0.7;">월 10,900원</div>
             </div>
           </div>
           <span class="badge red">음악앱 중복</span>
@@ -240,14 +204,13 @@ html_code = """
         </div>
       </div>
 
-      <!-- 스포티파이 -->
       <div class="sub-card good" onclick="openDetail('스포티파이', '11,900원', '음악 스트리밍', '재생 450회', '평균 200회', '85%', '정상 이용 중', 'https://www.spotify.com/kr-ko/account/overview/')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#1ed760;">S</div>
             <div>
               <div style="font-weight:700;">스포티파이</div>
-              <div style="font-size:12px; color:#64748b;">월 11,900원</div>
+              <div style="font-size:12px; opacity:0.7;">월 11,900원</div>
             </div>
           </div>
           <span class="badge blue">주력 음악앱</span>
@@ -265,14 +228,13 @@ html_code = """
         </div>
       </div>
 
-      <!-- 배달의민족 (배민클럽) -->
       <div class="sub-card warning" onclick="openDetail('배달의민족 (배민클럽)', '3,900원', '배달 혜택', '3회 이용 (혜택 2,100원)', '월 5회 이상 권장', '40%', '본전 미달 이용 중', 'https://www.baemin.com')">
         <div class="card-top">
           <div class="card-info">
             <div class="icon-box" style="background:#2ac1bc;">배</div>
             <div>
               <div style="font-weight:700;">배민클럽</div>
-              <div style="font-size:12px; color:#64748b;">월 3,900원</div>
+              <div style="font-size:12px; opacity:0.7;">월 3,900원</div>
             </div>
           </div>
           <span class="badge orange">본전 미달</span>
@@ -292,7 +254,6 @@ html_code = """
     </div>
   </div>
 
-  <!-- 2. 알림 센터 화면 -->
   <div id="screen-notif" class="screen">
     <h3 style="margin-bottom:16px;">알림 센터</h3>
     <div class="notif-item">
@@ -309,24 +270,16 @@ html_code = """
         <div class="notif-desc">아빠 계정과 '유튜브 프리미엄'을 각각 결제 중입니다. 패밀리 요금제로 통합 시 월 9,000원 절약 가능!</div>
       </div>
     </div>
-    <div class="notif-item">
-      <div class="notif-icon">💡</div>
-      <div>
-        <div class="notif-title">멜론 구독 재조정 추천</div>
-        <div class="notif-desc">스포티파이를 주로 이용 중이시네요. 멜론 구독을 정지하는 것을 권장합니다.</div>
-      </div>
-    </div>
   </div>
 
-  <!-- 3. 상세 분석 & 해지 이동 화면 -->
   <div id="screen-detail" class="screen">
-    <button onclick="switchScreen('dashboard')" style="border:none; background:none; color:#64748b; font-weight:700; cursor:pointer; margin-bottom:12px;">← 뒤로가기</button>
+    <button onclick="switchScreen('dashboard')" style="border:none; background:none; opacity:0.7; font-weight:700; cursor:pointer; margin-bottom:12px;">← 뒤로가기</button>
     <div style="background:#0f172a; color:white; padding:20px; border-radius:12px; text-align:center; margin-bottom:16px;">
       <h2 id="det-title">서비스 이름</h2>
       <p id="det-price" style="color:#94a3b8; margin-top:4px;">월 0원</p>
     </div>
     <h4 style="margin-bottom:8px;">이용 현황 상세 분석</h4>
-    <div style="background:white; border:1px solid #e2e8f0; padding:16px; border-radius:12px; margin-bottom:16px;">
+    <div style="background:var(--card-bg); border:1px solid rgba(0,0,0,0.08); padding:16px; border-radius:12px; margin-bottom:16px;">
       <p style="margin-bottom:8px;"><strong>내 사용량:</strong> <span id="det-use">0</span></p>
       <p style="margin-bottom:8px;"><strong>권장/평균 기준:</strong> <span id="det-avg">0</span></p>
       <p style="margin-bottom:8px;"><strong>진단 상태:</strong> <span id="det-status" style="color:#ef4444; font-weight:700;">-</span></p>
@@ -334,12 +287,10 @@ html_code = """
     <a id="det-link" href="#" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:10px; font-weight:700; text-decoration:none;">해지/계정 설정 페이지로 이동 ↗</a>
   </div>
 
-  <!-- 4. 가족 관리 화면 (4명) -->
   <div id="screen-family" class="screen">
     <h3>우리 가족 구독 지출</h3>
-    <p style="font-size:13px; color:#64748b; margin-top:4px; margin-bottom:16px;">가족 전체 총 148,200원 지출 중</p>
+    <p style="font-size:13px; opacity:0.7; margin-top:4px; margin-bottom:16px;">가족 전체 총 148,200원 지출 중</p>
 
-    <!-- 멤버 탭 -->
     <div class="member-tabs">
       <button class="mem-btn active" onclick="switchFamily('me', this)">나 (6개)</button>
       <button class="mem-btn" onclick="switchFamily('mom', this)">엄마 (3개)</button>
@@ -347,49 +298,58 @@ html_code = """
       <button class="mem-btn" onclick="switchFamily('sibling', this)">동생 (2개)</button>
     </div>
 
-    <!-- 멤버별 구독 내용 목록 -->
-    <div id="fam-list" class="card-list">
-      <!-- JS로 dynamic 처리 -->
-    </div>
+    <div id="fam-list" class="card-list"></div>
   </div>
 
-  <!-- 5. 구독 추가 화면 -->
   <div id="screen-add" class="screen">
     <h3 style="margin-bottom: 16px;">새 구독 서비스 추가</h3>
     <div style="display:flex; flex-direction:column; gap:12px;">
       <input type="text" placeholder="서비스 이름 (예: 왓챠)" style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
       <input type="number" placeholder="월 결제 금액 (원)" style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
-      <select style="padding:12px; border:1px solid #cbd5e1; border-radius:8px;">
-        <option>영상 스트리밍 (시간 기준)</option>
-        <option>음악 스트리밍 (재생 횟수 기준)</option>
-        <option>기타 쇼핑/배달 혜택</option>
-      </select>
       <button onclick="switchScreen('dashboard')" style="padding:14px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer;">구독 등록하기</button>
     </div>
   </div>
 
-  <!-- 6. 계정 및 설정 / FAQ 화면 -->
   <div id="screen-settings" class="screen">
     <h3 style="margin-bottom:16px;">내 계정 및 설정</h3>
-    <div style="background:white; border:1px solid #e2e8f0; border-radius:12px; padding:16px; margin-bottom:16px;">
+    
+    <div style="background:var(--card-bg); border:1px solid rgba(0,0,0,0.08); border-radius:12px; padding:16px; margin-bottom:16px;">
       <p style="font-weight:700;">홍길동 (gildong@example.com)</p>
-      <p style="font-size:12px; color:#64748b; margin-top:4px;">ZeroSub 프리미엄 가계부 이용 중</p>
+      <p style="font-size:12px; opacity:0.7; margin-top:4px;">ZeroSub 프리미엄 가계부 이용 중</p>
     </div>
 
-    <h4 style="margin-bottom:8px;">자주 묻는 질문 (FAQ)</h4>
+    <h4 style="margin-bottom:8px;">🎨 화면 스타일 설정</h4>
+    <div class="custom-panel">
+      <div class="custom-row">
+        <span>🎨 배경 테마 색상:</span>
+        <select class="custom-select" onchange="changeTheme(this.value)">
+          <option value="pastel-blue">파스텔블루 (기본)</option>
+          <option value="lime-green">라임그린</option>
+          <option value="mystic-pink">미스틱핑크</option>
+          <option value="dark">다크 모드</option>
+        </select>
+      </div>
+      <div class="custom-row">
+        <span>✏️ 글꼴 종류 선택:</span>
+        <select class="custom-select" onchange="changeFont(this.value)">
+          <option value="'GangwonEduModu', sans-serif">강원교육모두체 (기본)</option>
+          <option value="'Gamja Flower', cursive">감자꽃마을</option>
+          <option value="'Nanum Gothic', sans-serif">나눔고딕</option>
+          <option value="'Cute Font', cursive">귀여운폰트</option>
+          <option value="'Sunflower', sans-serif">스타일리</option>
+        </select>
+      </div>
+    </div>
+
+    <h4 style="margin-bottom:8px; margin-top:16px;">자주 묻는 질문 (FAQ)</h4>
     <div style="display:flex; flex-direction:column; gap:8px; font-size:13px;">
-      <details style="background:white; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
+      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
         <summary style="font-weight:700; cursor:pointer;">왜 바로 원클릭 해지가 안 되나요?</summary>
-        <p style="color:#64748b; margin-top:6px; font-size:12px;">각 서비스사(넷플릭스, 티빙 등)의 보안 정책상 외부 앱에서 로그인 없이 해지 버튼을 직접 누르는 것은 금지되어 있습니다. ZeroSub은 해당 앱의 '해지 설정 URL'로 직접 연결해 드립니다.</p>
-      </details>
-      <details style="background:white; padding:10px; border-radius:8px; border:1px solid #e2e8f0;">
-        <summary style="font-weight:700; cursor:pointer;">가족 중복 구독은 어떻게 찾나요?</summary>
-        <p style="color:#64748b; margin-top:6px; font-size:12px;">'가족 관리' 탭에서 구성원을 등록하면 동일한 서비스(예: 유튜브)를 결제 중인 계정을 자동으로 대조하여 알림을 보냅니다.</p>
+        <p style="opacity:0.7; margin-top:6px; font-size:12px;">서비스사 보안 정책상 계정 해지 버튼 연결 URL로 직접 연결해 드립니다.</p>
       </details>
     </div>
   </div>
 
-  <!-- 하단 네비게이션 바 -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchScreen('dashboard')">🏠<br>홈</button>
     <button class="nav-item" onclick="switchScreen('add')">➕<br>구독 추가</button>
@@ -399,14 +359,9 @@ html_code = """
 </div>
 
 <script>
-  // 화면 전환 함수
   function switchScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(function(el) {
-      el.classList.remove('active');
-    });
-    document.querySelectorAll('.nav-item').forEach(function(el) {
-      el.classList.remove('active');
-    });
+    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     document.getElementById('screen-' + screenId).classList.add('active');
     
     if(screenId === 'family') {
@@ -414,7 +369,6 @@ html_code = """
     }
   }
 
-  // 상세 보기 페이지 설정 함수 (오류 수정 반영)
   function openDetail(title, price, type, use, avg, fill, status, linkUrl) {
     document.getElementById('det-title').innerText = title;
     document.getElementById('det-price').innerText = "월 " + price + " (" + type + ")";
@@ -425,7 +379,6 @@ html_code = """
     switchScreen('detail');
   }
 
-  // 가족 멤버별 구독 정보 데이터
   const familyData = {
     me: [
       { name: '넷플릭스', price: '17,000원', desc: '시청시간: 32시간 40분' },
@@ -466,33 +419,32 @@ html_code = """
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <div>
             <div style="font-weight:700;">${item.name}</div>
-            <div style="font-size:12px; color:#64748b;">${item.desc}</div>
+            <div style="font-size:12px; opacity:0.7;">${item.desc}</div>
           </div>
-          <div style="font-weight:700; color:#0f172a;">${item.price}</div>
+          <div style="font-weight:700;">${item.price}</div>
         </div>
       `;
       container.appendChild(card);
     });
   }
 
-  // 테마 및 폰트 변경 기능
   function changeTheme(theme) {
     const root = document.documentElement;
-    if(theme === 'light') {
-      root.style.setProperty('--bg-color', '#f1f5f9');
+    if(theme === 'pastel-blue') {
+      root.style.setProperty('--bg-color', '#e0f2fe');
       root.style.setProperty('--card-bg', '#ffffff');
-      root.style.setProperty('--primary-color', '#3b82f6');
+      root.style.setProperty('--primary-color', '#0284c7');
       root.style.setProperty('--text-color', '#0f172a');
-    } else if(theme === 'mint') {
-      root.style.setProperty('--bg-color', '#e6f4f1');
+    } else if(theme === 'lime-green') {
+      root.style.setProperty('--bg-color', '#ecfdf5');
       root.style.setProperty('--card-bg', '#ffffff');
       root.style.setProperty('--primary-color', '#10b981');
       root.style.setProperty('--text-color', '#064e3b');
-    } else if(theme === 'warm') {
-      root.style.setProperty('--bg-color', '#fdf2f2');
+    } else if(theme === 'mystic-pink') {
+      root.style.setProperty('--bg-color', '#fdf2f8');
       root.style.setProperty('--card-bg', '#ffffff');
-      root.style.setProperty('--primary-color', '#f43f5e');
-      root.style.setProperty('--text-color', '#881337');
+      root.style.setProperty('--primary-color', '#ec4899');
+      root.style.setProperty('--text-color', '#831843');
     } else if(theme === 'dark') {
       root.style.setProperty('--bg-color', '#0f172a');
       root.style.setProperty('--card-bg', '#1e293b');
