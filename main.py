@@ -7,8 +7,22 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #f1f5f9; color: #0f172a; display: flex; justify-content: center; min-height: 100vh; }
+    .app-container { width: 100%; max-width: 430px; background: #ffffff; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
     
-    /* 네비게이션 & 헤더 */
+    /* 네비게이션 & 헤더 (오타 수정완료) */
+    .header { 
+      height: 60px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 0 16px; 
+      border-bottom: 1px solid #e2e8f0; 
+      background: #ffffff; 
+      position: sticky; 
+      top: 0; 
+      z-index: 100;
+    }
+    .logo { font-size: 20px; font-weight: 800; color: #1e293b; }
     .header-right { display: flex; align-items: center; gap: 8px; }
     .badge-btn { background: #f1f5f9; color: #475569; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
     .avatar { width: 30px; height: 30px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
@@ -25,7 +39,7 @@
 
     /* 구독 카드 스타일 */
     .card-list { display: flex; flex-direction: column; gap: 12px; }
-    .sub-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 2px solid #e2e8f0; }
+    .sub-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; }
     .sub-card.good { border-color: #3b82f6; }
     .sub-card.bad { border-color: #ef4444; }
     
@@ -53,7 +67,7 @@
     .feedback-box { background: #fef2f2; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.4; margin-bottom: 16px; }
 
     /* 바텀 네비게이션 바 */
-    .bottom-nav { position: absolute; bottom: 0; width: 100%; height: 60px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
     .nav-item { border: none; background: none; color: #64748b; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
     .nav-item.active { color: #3b82f6; font-weight: 700; }
   </style>
