@@ -7,7 +7,6 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: #f1f5f9; color: #0f172a; display: flex; justify-content: center; min-height: 100vh; }
-    .app-container { width: 100%; max-width: 430px; background: #ffffff; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
     
     /* 네비게이션 & 헤더 */
     .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid #e2e8f0; background: #ffffff; sticky: top; }
