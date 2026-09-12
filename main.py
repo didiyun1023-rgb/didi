@@ -16,6 +16,9 @@ html_code = """
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cute+Font&family=Gamja+Flower&family=GangwonEduModu:wght@400;700&family=Nanum+Gothic:wght@400;700&family=Sunflower:wght@500;700&display=swap" rel="stylesheet">
   
+  <!-- 시각화 차트 라이브러리 (Chart.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root {
       --bg-color: #e0f2fe;
@@ -41,10 +44,13 @@ html_code = """
     .screen { display: none; padding: 16px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
     .screen.active { display: block; }
 
-    .summary-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 18px; margin-bottom: 16px; }
+    .summary-card { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; padding: 18px; margin-bottom: 12px; }
     .summary-title { font-size: 0.8rem; opacity: 0.7; margin-bottom: 4px; }
     .summary-price { font-size: 1.6rem; font-weight: 700; margin-bottom: 8px; }
     .alert-tag { background: #fef2f2; color: #ef4444; font-size: 0.75rem; font-weight: 700; padding: 6px 10px; border-radius: 6px; display: inline-block; }
+
+    .chart-card { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.06); border-radius: 16px; padding: 16px; margin-bottom: 16px; text-align: center; }
+    .chart-container { position: relative; width: 100%; max-width: 200px; margin: 0 auto; }
 
     .custom-panel { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem; }
     .custom-row { display: flex; justify-content: space-between; align-items: center; }
@@ -109,8 +115,16 @@ html_code = """
       <div class="alert-tag">⚠️ 유튜브, 스포티파이 가족 중복 계정 감지!</div>
     </div>
 
+    <!-- 구독 카테고리 시각화 그래프 추가 -->
+    <div class="chart-card">
+      <div style="font-size:0.8rem; font-weight:700; margin-bottom:10px; opacity:0.8;">📊 카테고리별 지출 리포트</div>
+      <div class="chart-container">
+        <canvas id="subChart"></canvas>
+      </div>
+    </div>
+
     <div class="card-list" id="main-sub-list">
-      <!-- 구독 리스트가 자바스크립트로 동적 생성됩니다 -->
+      <!-- 구독 리스트 동적 생성 -->
     </div>
   </div>
 
@@ -161,13 +175,32 @@ html_code = """
     <div id="fam-list" class="card-list"></div>
   </div>
 
-  <!-- 새로 등록하기 기능 완벽 동작 -->
+  <!-- 결제 주기 및 다음 결제일 입력 항목 추가 -->
   <div id="screen-add" class="screen">
     <h3 style="margin-bottom: 16px;">새 구독 서비스 추가</h3>
     <form onsubmit="addSubscription(event)" style="display:flex; flex-direction:column; gap:12px;">
-      <input type="text" id="add-name" placeholder="서비스 이름 (예: 왓챠, 디즈니플러스)" required style="padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.9rem;">
-      <input type="number" id="add-price" placeholder="월 결제 금액 (원) 예: 7900" required style="padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.9rem;">
-      <button type="submit" style="padding:14px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer; font-size:0.95rem;">구독 등록하기</button>
+      <div>
+        <label style="font-size:0.75rem; font-weight:700; opacity:0.8; margin-bottom:4px; display:block;">서비스 이름</label>
+        <input type="text" id="add-name" placeholder="예: 왓챠, 디즈니플러스" required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+      </div>
+      <div>
+        <label style="font-size:0.75rem; font-weight:700; opacity:0.8; margin-bottom:4px; display:block;">결제 금액 (원)</label>
+        <input type="number" id="add-price" placeholder="예: 7900" required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem;">
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label style="font-size:0.75rem; font-weight:700; opacity:0.8; margin-bottom:4px; display:block;">결제 주기</label>
+          <select id="add-cycle" style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; background:var(--card-bg); color:var(--text-color);">
+            <option value="매월">매월</option>
+            <option value="매년">매년</option>
+          </select>
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:0.75rem; font-weight:700; opacity:0.8; margin-bottom:4px; display:block;">다음 결제일</label>
+          <input type="date" id="add-date" required style="width:100%; padding:12px; border:1px solid #cbd5e1; border-radius:8px; font-size:0.85rem; background:var(--card-bg); color:var(--text-color);">
+        </div>
+      </div>
+      <button type="submit" style="padding:14px; background:var(--primary-color); color:white; border:none; border-radius:8px; font-weight:700; margin-top:12px; cursor:pointer; font-size:0.9rem;">구독 등록하기</button>
     </form>
   </div>
 
@@ -210,11 +243,20 @@ html_code = """
       </div>
     </div>
 
+    <!-- FAQ 항목 확장 추가 -->
     <h4 style="margin-bottom:8px; margin-top:16px;">자주 묻는 질문 (FAQ)</h4>
     <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;">
       <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
         <summary style="font-weight:700; cursor:pointer;">왜 바로 원클릭 해지가 안 되나요?</summary>
-        <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">서비스사 보안 정책상 계정 해지 버튼 연결 URL로 직접 연결해 드립니다.</p>
+        <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">각 서비스사의 보안 및 약관 정책상 타 앱에서 해지 결정을 직접 대행할 수 없습니다. 대신 클릭 시 즉시 해당 서비스의 해지/계정 페이지로 연결해 드립니다.</p>
+      </details>
+      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
+        <summary style="font-weight:700; cursor:pointer;">가족 중복 구독은 어떻게 감지하나요?</summary>
+        <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">가족 관리 탭에 등록된 서비스 데이터를 기반으로 동일한 서비스(예: 유튜브 프리미엄, OTT 등)를 2명 이상 결제 중일 때 자동으로 감지하여 알림을 보냅니다.</p>
+      </details>
+      <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
+        <summary style="font-weight:700; cursor:pointer;">결제일 알림은 언제 오나요?</summary>
+        <p style="opacity:0.7; margin-top:6px; font-size:0.75rem;">자동 결제일 3일 전과 1일 전에 푸시 알림 및 알림 센터를 통해 사용량 분석과 함께 안내해 드립니다.</p>
       </details>
     </div>
   </div>
@@ -228,7 +270,6 @@ html_code = """
 </div>
 
 <script>
-  // 유명 브랜드 도메인 로고 맵 (자동 아이콘 매칭)
   const domainMap = {
     '넷플릭스': 'netflix.com',
     '유튜브': 'youtube.com',
@@ -263,15 +304,52 @@ html_code = """
     return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
   }
 
-  // 초기 내 구독 목록 데이터
   let subscriptions = [
-    { title: '넷플릭스', price: 17000, type: '영상 스트리밍', use: '32시간 40분', avg: '15시간 00분', fill: '80%', status: '정상 이용 중', url: 'https://www.netflix.com/youraccount', badgeText: '알뜰 활용', badgeClass: 'blue', statusClass: 'good', usageText: '이번 달 시청시간', usageVal: '32시간 40분', dateText: '다음 결제일: 10월 15일' },
-    { title: '유튜브 프리미엄', price: 14900, type: '영상/음악', use: '48시간 10분', avg: '20시간 00분', fill: '90%', status: '아빠 계정과 중복 이용 중', url: 'https://www.youtube.com/paid_memberships', badgeText: '가족 중복 주의', badgeClass: 'orange', statusClass: 'warning', usageText: '시청시간', usageVal: '48시간 10분 (아빠도 구독 중!)', dateText: '다음 결제일: 10월 02일' },
-    { title: '티빙', price: 13900, type: '영상 스트리밍', use: '0시간 20분', avg: '12시간 00분', fill: '5%', status: '해지 강력 권장 (D-3)', url: 'https://www.tving.com/my/subscription', badgeText: '낭비 경고 (D-3)', badgeClass: 'red', statusClass: 'bad', usageText: '이번 달 시청시간', usageVal: '0시간 20분', dateText: '3일 후 13,900원 자동결제' },
-    { title: '멜론', price: 10900, type: '음악 스트리밍', use: '재생 12회', avg: '평균 250회', fill: '8%', status: '스포티파이와 기능 중복', url: 'https://www.melon.com/buy/pamphlet/continue.htm', badgeText: '음악앱 중복', badgeClass: 'red', statusClass: 'bad', usageText: '월간 총 재생 횟수', usageVal: '12회 (방치 중)', dateText: '다음 결제일: 09월 28일' },
-    { title: '스포티파이', price: 11900, type: '음악 스트리밍', use: '재생 450회', avg: '평균 200회', fill: '85%', status: '정상 이용 중', url: 'https://www.spotify.com/kr-ko/account/overview/', badgeText: '주력 음악앱', badgeClass: 'blue', statusClass: 'good', usageText: '월간 총 재생 횟수', usageVal: '450회', dateText: '다음 결제일: 10월 05일' },
-    { title: '배민클럽', price: 3900, type: '배달 혜택', use: '3회 이용 (혜택 2,100원)', avg: '월 5회 이상 권장', fill: '40%', status: '본전 미달 이용 중', url: 'https://www.baemin.com', badgeText: '본전 미달', badgeClass: 'orange', statusClass: 'warning', usageText: '이번 달 주문 할인', usageVal: '3회 (구독료 미달)', dateText: '다음 결제일: 10월 11일' }
+    { title: '넷플릭스', price: 17000, category: '영상', cycle: '매월', type: '영상 스트리밍', use: '32시간 40분', avg: '15시간 00분', fill: '80%', status: '정상 이용 중', url: 'https://www.netflix.com/youraccount', badgeText: '알뜰 활용', badgeClass: 'blue', statusClass: 'good', usageText: '이번 달 시청시간', usageVal: '32시간 40분', dateText: '다음 결제일: 10월 15일' },
+    { title: '유튜브 프리미엄', price: 14900, category: '영상', cycle: '매월', type: '영상/음악', use: '48시간 10분', avg: '20시간 00분', fill: '90%', status: '아빠 계정과 중복 이용 중', url: 'https://www.youtube.com/paid_memberships', badgeText: '가족 중복 주의', badgeClass: 'orange', statusClass: 'warning', usageText: '시청시간', usageVal: '48시간 10분 (아빠도 구독 중!)', dateText: '다음 결제일: 10월 02일' },
+    { title: '티빙', price: 13900, category: '영상', cycle: '매월', type: '영상 스트리밍', use: '0시간 20분', avg: '12시간 00분', fill: '5%', status: '해지 강력 권장 (D-3)', url: 'https://www.tving.com/my/subscription', badgeText: '낭비 경고 (D-3)', badgeClass: 'red', statusClass: 'bad', usageText: '이번 달 시청시간', usageVal: '0시간 20분', dateText: '3일 후 13,900원 자동결제' },
+    { title: '멜론', price: 10900, category: '음악', cycle: '매월', type: '음악 스트리밍', use: '재생 12회', avg: '평균 250회', fill: '8%', status: '스포티파이와 기능 중복', url: 'https://www.melon.com/buy/pamphlet/continue.htm', badgeText: '음악앱 중복', badgeClass: 'red', statusClass: 'bad', usageText: '월간 총 재생 횟수', usageVal: '12회 (방치 중)', dateText: '다음 결제일: 09월 28일' },
+    { title: '스포티파이', price: 11900, category: '음악', cycle: '매월', type: '음악 스트리밍', use: '재생 450회', avg: '평균 200회', fill: '85%', status: '정상 이용 중', url: 'https://www.spotify.com/kr-ko/account/overview/', badgeText: '주력 음악앱', badgeClass: 'blue', statusClass: 'good', usageText: '월간 총 재생 횟수', usageVal: '450회', dateText: '다음 결제일: 10월 05일' },
+    { title: '배민클럽', price: 3900, category: '생활', cycle: '매월', type: '배달 혜택', use: '3회 이용 (혜택 2,100원)', avg: '월 5회 이상 권장', fill: '40%', status: '본전 미달 이용 중', url: 'https://www.baemin.com', badgeText: '본전 미달', badgeClass: 'orange', statusClass: 'warning', usageText: '이번 달 주문 할인', usageVal: '3회 (구독료 미달)', dateText: '다음 결제일: 10월 11일' }
   ];
+
+  let subChartInstance = null;
+
+  function updateChart() {
+    const categories = { '영상': 0, '음악': 0, '생활': 0, '기타': 0 };
+    subscriptions.forEach(sub => {
+      if (categories[sub.category] !== undefined) {
+        categories[sub.category] += sub.price;
+      } else {
+        categories['기타'] += sub.price;
+      }
+    });
+
+    const ctx = document.getElementById('subChart').getContext('2d');
+    
+    if (subChartInstance) {
+      subChartInstance.destroy();
+    }
+
+    subChartInstance = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(categories),
+        datasets: [{
+          data: Object.values(categories),
+          backgroundColor: ['#0284c7', '#10b981', '#f59e0b', '#64748b'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
+        },
+        cutout: '65%'
+      }
+    });
+  }
 
   function renderSubscriptions() {
     const container = document.getElementById('main-sub-list');
@@ -279,7 +357,7 @@ html_code = """
 
     let totalPrice = 0;
 
-    subscriptions.forEach((sub, idx) => {
+    subscriptions.forEach((sub) => {
       totalPrice += sub.price;
       const iconUrl = getIconUrl(sub.title);
       
@@ -293,7 +371,7 @@ html_code = """
             <img class="app-icon-img" src="${iconUrl}" onerror="this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128'" alt="${sub.title}">
             <div>
               <div style="font-weight:700;">${sub.title}</div>
-              <div style="font-size:0.75rem; opacity:0.7;">월 ${sub.price.toLocaleString()}원</div>
+              <div style="font-size:0.75rem; opacity:0.7;">${sub.cycle} ${sub.price.toLocaleString()}원</div>
             </div>
           </div>
           <span class="badge ${sub.badgeClass}">${sub.badgeText}</span>
@@ -315,22 +393,31 @@ html_code = """
 
     document.getElementById('total-price-text').innerText = totalPrice.toLocaleString();
     document.getElementById('total-count-text').innerText = subscriptions.length;
+
+    updateChart();
   }
 
-  // 구독 신규 추가 기능
   function addSubscription(e) {
     e.preventDefault();
     const nameInput = document.getElementById('add-name');
     const priceInput = document.getElementById('add-price');
+    const cycleInput = document.getElementById('add-cycle');
+    const dateInput = document.getElementById('add-date');
 
     const name = nameInput.value.trim();
     const price = parseInt(priceInput.value.trim());
+    const cycle = cycleInput.value;
+    const dateVal = dateInput.value;
 
     if(name && !isNaN(price)) {
+      const formattedDate = dateVal ? `다음 결제일: ${dateVal.substring(5).replace('-', '월 ')}일` : '다음 결제일: 미정';
+
       subscriptions.unshift({
         title: name,
         price: price,
-        type: '신규 구독 서비스',
+        category: '기타',
+        cycle: cycle,
+        type: '신규 등록 서비스',
         use: '이용 데이터 수집 중',
         avg: '분석 중',
         fill: '50%',
@@ -341,11 +428,12 @@ html_code = """
         statusClass: 'good',
         usageText: '이용 현황',
         usageVal: '이용 중',
-        dateText: '다음 결제일: 등록 완료'
+        dateText: formattedDate
       });
 
       nameInput.value = '';
       priceInput.value = '';
+      dateInput.value = '';
 
       renderSubscriptions();
       switchScreen('dashboard');
@@ -410,7 +498,7 @@ html_code = """
             <img class="app-icon-img" src="${iconUrl}" onerror="this.src='https://www.google.com/s2/favicons?domain=google.com&sz=128'">
             <div>
               <div style="font-weight:700;">${item.title || item.name}</div>
-              <div style="font-size:0.75rem; opacity:0.7;">${item.desc || ('월 ' + item.price.toLocaleString() + '원')}</div>
+              <div style="font-size:0.75rem; opacity:0.7;">${item.desc || (item.cycle + ' ' + item.price.toLocaleString() + '원')}</div>
             </div>
           </div>
           <div style="font-weight:700;">${item.price ? (typeof item.price === 'number' ? item.price.toLocaleString() + '원' : item.price) : ''}</div>
@@ -453,11 +541,11 @@ html_code = """
     document.documentElement.style.setProperty('--font-scale', scale);
   }
 
-  // 초기 로드 시 구독 리스트 출력
+  // 초기 렌더링
   renderSubscriptions();
 </script>
 </body>
 </html>
 """
 
-components.html(html_code, height=850, scrolling=True)
+components.html(html_code, height=880, scrolling=True)
