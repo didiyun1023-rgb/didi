@@ -115,7 +115,7 @@ html_code = """
       <div class="alert-tag">⚠️ 유튜브, 스포티파이 가족 중복 계정 감지!</div>
     </div>
 
-    <!-- 구독 카테고리 시각화 그래프 추가 -->
+    <!-- 카테고리 시각화 그래프 -->
     <div class="chart-card">
       <div style="font-size:0.8rem; font-weight:700; margin-bottom:10px; opacity:0.8;">📊 카테고리별 지출 리포트</div>
       <div class="chart-container">
@@ -146,17 +146,23 @@ html_code = """
     </div>
   </div>
 
+  <!-- 상세 페이지: 비교 그래프 포함 -->
   <div id="screen-detail" class="screen">
     <button onclick="switchScreen('dashboard')" style="border:none; background:none; opacity:0.7; font-weight:700; cursor:pointer; margin-bottom:12px;">← 뒤로가기</button>
     <div style="background:#0f172a; color:white; padding:20px; border-radius:12px; text-align:center; margin-bottom:16px;">
       <h2 id="det-title">서비스 이름</h2>
       <p id="det-price" style="color:#94a3b8; margin-top:4px;">월 0원</p>
     </div>
-    <h4 style="margin-bottom:8px;">이용 현황 상세 분석</h4>
+    
+    <h4 style="margin-bottom:8px;">이용 현황 비교 그래프</h4>
     <div style="background:var(--card-bg); border:1px solid rgba(0,0,0,0.08); padding:16px; border-radius:12px; margin-bottom:16px;">
-      <p style="margin-bottom:8px;"><strong>내 사용량:</strong> <span id="det-use">0</span></p>
-      <p style="margin-bottom:8px;"><strong>권장/평균 기준:</strong> <span id="det-avg">0</span></p>
-      <p style="margin-bottom:8px;"><strong>진단 상태:</strong> <span id="det-status" style="color:#ef4444; font-weight:700;">-</span></p>
+      <!-- 이용 현황 비교 차트 -->
+      <div style="height: 140px; position: relative; margin-bottom: 12px;">
+        <canvas id="detailCompareChart"></canvas>
+      </div>
+      <div style="border-top: 1px solid rgba(0,0,0,0.05); padding-top: 10px;">
+        <p style="font-size:0.85rem;"><strong>AI 진단 결과:</strong> <span id="det-status" style="color:#ef4444; font-weight:700;">-</span></p>
+      </div>
     </div>
     <a id="det-link" href="#" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:10px; font-weight:700; text-decoration:none;">해지/계정 설정 페이지로 이동 ↗</a>
   </div>
@@ -175,7 +181,6 @@ html_code = """
     <div id="fam-list" class="card-list"></div>
   </div>
 
-  <!-- 결제 주기 및 다음 결제일 입력 항목 추가 -->
   <div id="screen-add" class="screen">
     <h3 style="margin-bottom: 16px;">새 구독 서비스 추가</h3>
     <form onsubmit="addSubscription(event)" style="display:flex; flex-direction:column; gap:12px;">
@@ -243,7 +248,6 @@ html_code = """
       </div>
     </div>
 
-    <!-- FAQ 항목 확장 추가 -->
     <h4 style="margin-bottom:8px; margin-top:16px;">자주 묻는 질문 (FAQ)</h4>
     <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;">
       <details style="background:var(--card-bg); padding:10px; border-radius:8px; border:1px solid rgba(0,0,0,0.08);">
@@ -305,15 +309,16 @@ html_code = """
   }
 
   let subscriptions = [
-    { title: '넷플릭스', price: 17000, category: '영상', cycle: '매월', type: '영상 스트리밍', use: '32시간 40분', avg: '15시간 00분', fill: '80%', status: '정상 이용 중', url: 'https://www.netflix.com/youraccount', badgeText: '알뜰 활용', badgeClass: 'blue', statusClass: 'good', usageText: '이번 달 시청시간', usageVal: '32시간 40분', dateText: '다음 결제일: 10월 15일' },
-    { title: '유튜브 프리미엄', price: 14900, category: '영상', cycle: '매월', type: '영상/음악', use: '48시간 10분', avg: '20시간 00분', fill: '90%', status: '아빠 계정과 중복 이용 중', url: 'https://www.youtube.com/paid_memberships', badgeText: '가족 중복 주의', badgeClass: 'orange', statusClass: 'warning', usageText: '시청시간', usageVal: '48시간 10분 (아빠도 구독 중!)', dateText: '다음 결제일: 10월 02일' },
-    { title: '티빙', price: 13900, category: '영상', cycle: '매월', type: '영상 스트리밍', use: '0시간 20분', avg: '12시간 00분', fill: '5%', status: '해지 강력 권장 (D-3)', url: 'https://www.tving.com/my/subscription', badgeText: '낭비 경고 (D-3)', badgeClass: 'red', statusClass: 'bad', usageText: '이번 달 시청시간', usageVal: '0시간 20분', dateText: '3일 후 13,900원 자동결제' },
-    { title: '멜론', price: 10900, category: '음악', cycle: '매월', type: '음악 스트리밍', use: '재생 12회', avg: '평균 250회', fill: '8%', status: '스포티파이와 기능 중복', url: 'https://www.melon.com/buy/pamphlet/continue.htm', badgeText: '음악앱 중복', badgeClass: 'red', statusClass: 'bad', usageText: '월간 총 재생 횟수', usageVal: '12회 (방치 중)', dateText: '다음 결제일: 09월 28일' },
-    { title: '스포티파이', price: 11900, category: '음악', cycle: '매월', type: '음악 스트리밍', use: '재생 450회', avg: '평균 200회', fill: '85%', status: '정상 이용 중', url: 'https://www.spotify.com/kr-ko/account/overview/', badgeText: '주력 음악앱', badgeClass: 'blue', statusClass: 'good', usageText: '월간 총 재생 횟수', usageVal: '450회', dateText: '다음 결제일: 10월 05일' },
-    { title: '배민클럽', price: 3900, category: '생활', cycle: '매월', type: '배달 혜택', use: '3회 이용 (혜택 2,100원)', avg: '월 5회 이상 권장', fill: '40%', status: '본전 미달 이용 중', url: 'https://www.baemin.com', badgeText: '본전 미달', badgeClass: 'orange', statusClass: 'warning', usageText: '이번 달 주문 할인', usageVal: '3회 (구독료 미달)', dateText: '다음 결제일: 10월 11일' }
+    { title: '넷플릭스', price: 17000, category: '영상', cycle: '매월', type: '영상 스트리밍', useVal: 32.6, avgVal: 15.0, unit: '시간', status: '정상 이용 중', url: 'https://www.netflix.com/youraccount', badgeText: '알뜰 활용', badgeClass: 'blue', statusClass: 'good', usageText: '이번 달 시청시간', usageDisp: '32시간 40분', dateText: '다음 결제일: 10월 15일' },
+    { title: '유튜브 프리미엄', price: 14900, category: '영상', cycle: '매월', type: '영상/음악', useVal: 48.1, avgVal: 20.0, unit: '시간', status: '아빠 계정과 중복 이용 중', url: 'https://www.youtube.com/paid_memberships', badgeText: '가족 중복 주의', badgeClass: 'orange', statusClass: 'warning', usageText: '시청시간', usageDisp: '48시간 10분', dateText: '다음 결제일: 10월 02일' },
+    { title: '티빙', price: 13900, category: '영상', cycle: '매월', type: '영상 스트리밍', useVal: 0.3, avgVal: 12.0, unit: '시간', status: '해지 강력 권장 (D-3)', url: 'https://www.tving.com/my/subscription', badgeText: '낭비 경고 (D-3)', badgeClass: 'red', statusClass: 'bad', usageText: '이번 달 시청시간', usageDisp: '0시간 20분', dateText: '3일 후 13,900원 자동결제' },
+    { title: '멜론', price: 10900, category: '음악', cycle: '매월', type: '음악 스트리밍', useVal: 12, avgVal: 250, unit: '회', status: '스포티파이와 기능 중복', url: 'https://www.melon.com/buy/pamphlet/continue.htm', badgeText: '음악앱 중복', badgeClass: 'red', statusClass: 'bad', usageText: '월간 총 재생 횟수', usageDisp: '12회 (방치 중)', dateText: '다음 결제일: 09월 28일' },
+    { title: '스포티파이', price: 11900, category: '음악', cycle: '매월', type: '음악 스트리밍', useVal: 450, avgVal: 200, unit: '회', status: '정상 이용 중', url: 'https://www.spotify.com/kr-ko/account/overview/', badgeText: '주력 음악앱', badgeClass: 'blue', statusClass: 'good', usageText: '월간 총 재생 횟수', usageDisp: '450회', dateText: '다음 결제일: 10월 05일' },
+    { title: '배민클럽', price: 3900, category: '생활', cycle: '매월', type: '배달 혜택', useVal: 3, avgVal: 5, unit: '회', status: '본전 미달 이용 중', url: 'https://www.baemin.com', badgeText: '본전 미달', badgeClass: 'orange', statusClass: 'warning', usageText: '이번 달 주문 할인', usageDisp: '3회 (구독료 미달)', dateText: '다음 결제일: 10월 11일' }
   ];
 
   let subChartInstance = null;
+  let detailChartInstance = null;
 
   function updateChart() {
     const categories = { '영상': 0, '음악': 0, '생활': 0, '기타': 0 };
@@ -326,10 +331,7 @@ html_code = """
     });
 
     const ctx = document.getElementById('subChart').getContext('2d');
-    
-    if (subChartInstance) {
-      subChartInstance.destroy();
-    }
+    if (subChartInstance) subChartInstance.destroy();
 
     subChartInstance = new Chart(ctx, {
       type: 'doughnut',
@@ -343,9 +345,7 @@ html_code = """
       },
       options: {
         responsive: true,
-        plugins: {
-          legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } }
-        },
+        plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } },
         cutout: '65%'
       }
     });
@@ -354,17 +354,18 @@ html_code = """
   function renderSubscriptions() {
     const container = document.getElementById('main-sub-list');
     container.innerHTML = '';
-
     let totalPrice = 0;
 
-    subscriptions.forEach((sub) => {
+    subscriptions.forEach((sub, idx) => {
       totalPrice += sub.price;
       const iconUrl = getIconUrl(sub.title);
       
       const card = document.createElement('div');
       card.className = `sub-card ${sub.statusClass}`;
-      card.onclick = () => openDetail(sub.title, `${sub.price.toLocaleString()}원`, sub.type, sub.use, sub.avg, sub.fill, sub.status, sub.url);
+      card.onclick = () => openDetail(sub);
       
+      const fillPct = Math.min(100, Math.round((sub.useVal / sub.avgVal) * 100));
+
       card.innerHTML = `
         <div class="card-top">
           <div class="card-info">
@@ -379,9 +380,9 @@ html_code = """
         <div class="card-mid">
           <div class="usage-text">
             <span>${sub.usageText}</span>
-            <span>${sub.usageVal}</span>
+            <span>${sub.usageDisp}</span>
           </div>
-          <div class="bar-bg"><div class="bar-fill ${sub.badgeClass === 'red' ? 'red' : (sub.badgeClass === 'orange' ? 'orange' : '')}" style="width: ${sub.fill};"></div></div>
+          <div class="bar-bg"><div class="bar-fill ${sub.badgeClass === 'red' ? 'red' : (sub.badgeClass === 'orange' ? 'orange' : '')}" style="width: ${fillPct}%;"></div></div>
         </div>
         <div class="card-bottom">
           <span>${sub.dateText}</span>
@@ -395,6 +396,52 @@ html_code = """
     document.getElementById('total-count-text').innerText = subscriptions.length;
 
     updateChart();
+  }
+
+  function openDetail(sub) {
+    document.getElementById('det-title').innerText = sub.title;
+    document.getElementById('det-price').innerText = `${sub.cycle} ${sub.price.toLocaleString()}원 (${sub.type})`;
+    document.getElementById('det-status').innerText = sub.status;
+    document.getElementById('det-link').href = sub.url;
+
+    // 상세 비교 가로 막대 그래프 그리기
+    const ctx = document.getElementById('detailCompareChart').getContext('2d');
+    if (detailChartInstance) detailChartInstance.destroy();
+
+    detailChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['내 사용량', '평균/권장 기준'],
+        datasets: [{
+          data: [sub.useVal, sub.avgVal],
+          backgroundColor: [
+            sub.badgeClass === 'red' ? '#ef4444' : (sub.badgeClass === 'orange' ? '#f59e0b' : '#0284c7'),
+            '#94a3b8'
+          ],
+          borderRadius: 6,
+          barThickness: 20
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.raw}${sub.unit}`
+            }
+          }
+        },
+        scales: {
+          x: { beginAtZero: true, grid: { display: false } },
+          y: { grid: { display: false } }
+        }
+      }
+    });
+
+    switchScreen('detail');
   }
 
   function addSubscription(e) {
@@ -418,16 +465,16 @@ html_code = """
         category: '기타',
         cycle: cycle,
         type: '신규 등록 서비스',
-        use: '이용 데이터 수집 중',
-        avg: '분석 중',
-        fill: '50%',
-        status: '신규 등록 완료',
+        useVal: 50,
+        avgVal: 50,
+        unit: '%',
+        status: '신규 등록 완료 (데이터 수집 중)',
         url: '#',
         badgeText: '신규 추가',
         badgeClass: 'blue',
         statusClass: 'good',
         usageText: '이용 현황',
-        usageVal: '이용 중',
+        usageDisp: '정상 이용 중',
         dateText: formattedDate
       });
 
@@ -448,16 +495,6 @@ html_code = """
     if(screenId === 'family') {
       switchFamily('me', document.querySelectorAll('.mem-btn')[0]);
     }
-  }
-
-  function openDetail(title, price, type, use, avg, fill, status, linkUrl) {
-    document.getElementById('det-title').innerText = title;
-    document.getElementById('det-price').innerText = "월 " + price + " (" + type + ")";
-    document.getElementById('det-use').innerText = use;
-    document.getElementById('det-avg').innerText = avg;
-    document.getElementById('det-status').innerText = status;
-    document.getElementById('det-link').href = linkUrl;
-    switchScreen('detail');
   }
 
   const familyData = {
