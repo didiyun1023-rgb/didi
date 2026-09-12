@@ -1,43 +1,36 @@
+import streamlit as st
+import streamlit.components.v1 as components
+
+# 페이지 기본 설정
+st.set_page_config(page_title="SubCut", layout="centered")
+
+# HTML/CSS/JS 단일 템플릿
+html_code = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SubCut - 구독 해지 & 가성비 관리</title>
+  <title>SubCut - 구독 해지 및 가성비 관리</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     body { background-color: #f1f5f9; color: #0f172a; display: flex; justify-content: center; min-height: 100vh; }
     .app-container { width: 100%; max-width: 430px; background: #ffffff; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
     
-    /* 네비게이션 & 헤더 (오타 수정완료) */
-    .header { 
-      height: 60px; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 0 16px; 
-      border-bottom: 1px solid #e2e8f0; 
-      background: #ffffff; 
-      position: sticky; 
-      top: 0; 
-      z-index: 100;
-    }
+    .header { height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 16px; border-bottom: 1px solid #e2e8f0; background: #ffffff; position: sticky; top: 0; z-index: 100; }
     .logo { font-size: 20px; font-weight: 800; color: #1e293b; }
     .header-right { display: flex; align-items: center; gap: 8px; }
     .badge-btn { background: #f1f5f9; color: #475569; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
     .avatar { width: 30px; height: 30px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
 
-    /* 화면 전환 (Tab) */
     .screen { display: none; padding: 16px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
     .screen.active { display: block; }
 
-    /* 대시보드 요약 배너 */
     .summary-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-bottom: 20px; }
     .summary-title { font-size: 12px; color: #64748b; margin-bottom: 4px; }
     .summary-price { font-size: 24px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
     .alert-tag { background: #fef2f2; color: #ef4444; font-size: 11px; font-weight: 700; padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
-    /* 구독 카드 스타일 */
     .card-list { display: flex; flex-direction: column; gap: 12px; }
     .sub-card { background: #ffffff; border-radius: 12px; padding: 16px; border: 2px solid #e2e8f0; cursor: pointer; }
     .sub-card.good { border-color: #3b82f6; }
@@ -60,13 +53,11 @@
     .link-btn.blue { color: #2563eb; }
     .link-btn.red { color: #dc2626; }
 
-    /* 상세 화면 가성비 그래프 */
     .graph-box { background: white; border-radius: 12px; padding: 16px; border: 1px solid #e2e8f0; margin: 16px 0; display: flex; justify-content: space-around; align-items: flex-end; height: 160px; }
     .bar-group { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 11px; color: #64748b; }
     .bar-pillar { width: 32px; border-radius: 4px 4px 0 0; }
     .feedback-box { background: #fef2f2; color: #b91c1c; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.4; margin-bottom: 16px; }
 
-    /* 바텀 네비게이션 바 */
     .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 430px; height: 60px; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 100; }
     .nav-item { border: none; background: none; color: #64748b; font-size: 11px; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
     .nav-item.active { color: #3b82f6; font-weight: 700; }
@@ -75,7 +66,6 @@
 <body>
 
 <div class="app-container">
-  <!-- 상단 헤더 -->
   <header class="header">
     <div class="logo">SubCut</div>
     <div class="header-right">
@@ -84,7 +74,6 @@
     </div>
   </header>
 
-  <!-- 1. 메인 대시보드 화면 -->
   <div id="screen-dashboard" class="screen active">
     <div class="summary-card">
       <div class="summary-title">이번 달 결제 예정 총액</div>
@@ -93,7 +82,6 @@
     </div>
 
     <div class="card-list">
-      <!-- 알뜰 카드 -->
       <div class="sub-card good" onclick="switchScreen('detail')">
         <div class="card-top">
           <div class="card-info">
@@ -118,7 +106,6 @@
         </div>
       </div>
 
-      <!-- 낭비 카드 -->
       <div class="sub-card bad" onclick="switchScreen('detail')">
         <div class="card-top">
           <div class="card-info">
@@ -142,7 +129,6 @@
     </div>
   </div>
 
-  <!-- 2. 구독 등록 화면 -->
   <div id="screen-add" class="screen">
     <h3 style="margin-bottom: 16px;">새 구독 서비스 추가</h3>
     <div style="display:flex; flex-direction:column; gap:12px;">
@@ -156,7 +142,6 @@
     </div>
   </div>
 
-  <!-- 3. 가성비 분석 상세 화면 -->
   <div id="screen-detail" class="screen">
     <div style="background:#000; color:white; padding:16px; border-radius:8px; text-align:center; margin-bottom:16px;">
       <h2>티빙 프리미엄 요금제</h2>
@@ -180,7 +165,6 @@
     <a href="https://www.tving.com" target="_blank" style="display:block; text-align:center; background:#ef4444; color:white; padding:14px; border-radius:8px; font-weight:700; text-decoration:none;">해지 페이지 직링크로 이동 ↗</a>
   </div>
 
-  <!-- 4. 가족 통합 관리 화면 -->
   <div id="screen-family" class="screen">
     <h3>우리 가족 구독 지출</h3>
     <p style="font-size:13px; color:#64748b; margin-top:4px; margin-bottom:16px;">월 102,400원 (총 8개 이용 중)</p>
@@ -194,7 +178,6 @@
     </div>
   </div>
 
-  <!-- 하단 탭 바 -->
   <nav class="bottom-nav">
     <button class="nav-item active" onclick="switchScreen('dashboard')">🏠<br>홈</button>
     <button class="nav-item" onclick="switchScreen('add')">➕<br>구독 추가</button>
@@ -204,9 +187,15 @@
 
 <script>
   function switchScreen(screenId) {
-    document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.screen').forEach(function(el) {
+      el.classList.remove('active');
+    });
     document.getElementById('screen-' + screenId).classList.add('active');
   }
 </script>
 </body>
 </html>
+"""
+
+# 파이썬 화면에 렌더링
+components.html(html_code, height=800, scrolling=True)
