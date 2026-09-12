@@ -9,7 +9,6 @@
     body { background-color: #f1f5f9; color: #0f172a; display: flex; justify-content: center; min-height: 100vh; }
     
     /* 네비게이션 & 헤더 */
-    .logo { font-size: 20px; font-weight: 800; color: #1e293b; }
     .header-right { display: flex; align-items: center; gap: 8px; }
     .badge-btn { background: #f1f5f9; color: #475569; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
     .avatar { width: 30px; height: 30px; border-radius: 50%; background: #3b82f6; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; }
